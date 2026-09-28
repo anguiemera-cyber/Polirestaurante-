@@ -5,11 +5,31 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DAO para la entidad Pedido.
- * Implementa operaciones CRUD sobre listas en memoria.
+ * Objeto de Acceso a Datos (DAO) para la entidad {@link Pedido}.
+ * <p>
+ * Implementa las operaciones CRUD de {@link ICrudDAO} sobre listas en
+ * memoria y añade búsquedas relacionadas con los pedidos.
+ * </p>
+ *
+ * @version 1.0
+ * @see ICrudDAO
+ * @see Pedido
  */
 public class PedidoDAO implements ICrudDAO<Pedido> {
 
+    /**
+     * Agrega un pedido a la lista.
+     * <p>
+     * Si el id del pedido es menor o igual a cero, se asigna automáticamente
+     * el siguiente identificador disponible.
+     * </p>
+     *
+     * @param lista lista en memoria de pedidos
+     * @param pedido pedido que se desea registrar
+     * @return el pedido registrado
+     * @throws IllegalArgumentException si la lista o el pedido son nulos,
+     * o si ya existe un pedido con el mismo id
+     */
     @Override
     public Pedido crear(List<Pedido> lista, Pedido pedido) {
         validar(lista, pedido);
@@ -26,6 +46,14 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         return pedido;
     }
 
+    /**
+     * Actualiza la información de un pedido existente.
+     *
+     * @param lista lista en memoria de pedidos
+     * @param pedido pedido con los datos actualizados
+     * @return el pedido actualizado o {@code null} si no existe
+     * @throws IllegalArgumentException si la lista o el pedido son nulos
+     */
     @Override
     public Pedido actualizar(List<Pedido> lista, Pedido pedido) {
         validar(lista, pedido);
@@ -40,6 +68,14 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         return null;
     }
 
+    /**
+     * Elimina un pedido según su identificador.
+     *
+     * @param lista lista en memoria de pedidos
+     * @param id identificador del pedido a eliminar
+     * @return {@code true} si el pedido fue eliminado;
+     * {@code false} si no existe o la lista es nula
+     */
     @Override
     public boolean eliminar(List<Pedido> lista, int id) {
         if (lista == null) {
@@ -49,6 +85,13 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         return lista.removeIf(p -> p.getid() == id);
     }
 
+    /**
+     * Busca un pedido por su identificador.
+     *
+     * @param lista lista en memoria de pedidos
+     * @param id identificador del pedido
+     * @return el pedido encontrado o {@code null} si no existe
+     */
     @Override
     public Pedido buscarPorId(List<Pedido> lista, int id) {
         if (lista == null) {
@@ -64,6 +107,12 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         return null;
     }
 
+    /**
+     * Obtiene todos los pedidos registrados.
+     *
+     * @param lista lista en memoria de pedidos
+     * @return una vista no modificable de los pedidos
+     */
     @Override
     public List<Pedido> listar(List<Pedido> lista) {
         if (lista == null) {
@@ -74,7 +123,14 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
     }
 
     /**
-     * Busca pedidos asociados a una mesa.
+     * Busca todos los pedidos asociados a una mesa.
+     * <p>
+     * La comparación ignora diferencias entre mayúsculas y minúsculas.
+     * </p>
+     *
+     * @param lista lista en memoria de pedidos
+     * @param mesa número o nombre de la mesa
+     * @return lista de pedidos asociados a la mesa indicada
      */
     public List<Pedido> buscarPorMesa(List<Pedido> lista, String mesa) {
         if (lista == null || mesa == null) {
@@ -86,6 +142,12 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
                 .toList();
     }
 
+    /**
+     * Calcula el siguiente identificador disponible.
+     *
+     * @param lista lista de pedidos
+     * @return el id máximo encontrado más uno
+     */
     private int siguienteId(List<Pedido> lista) {
         int max = 0;
 
@@ -96,7 +158,16 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         return max + 1;
     }
 
+    /**
+     * Verifica que los parámetros obligatorios sean válidos.
+     *
+     * @param lista lista de pedidos
+     * @param pedido pedido a validar
+     * @throws IllegalArgumentException si alguno de los parámetros es nulo
+     * o si el producto asociado al pedido es nulo
+     */
     private void validar(List<Pedido> lista, Pedido pedido) {
+
         if (lista == null) {
             throw new IllegalArgumentException(
                 "La lista de pedidos no puede ser nula"
