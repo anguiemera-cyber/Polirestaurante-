@@ -26,8 +26,8 @@ public class Cocinero {
         this.administrar=administrar;
     }
     
-     public int getid() { return id; }
-    public void setid(int id) { this.id = id; }
+     public int getPersona() { return Persona; }
+    public void setPersona(int id) { this.Persona = Persona; }
 
     public int getcantidad() { return cantidad; }
     public void setcantidad(int cantidad) { this.cantidad = this.cantidad; }

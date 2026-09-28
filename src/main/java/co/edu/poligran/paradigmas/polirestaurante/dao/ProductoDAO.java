@@ -15,7 +15,7 @@ import java.util.List;
  * @see ICrudDAO
  * @see Pedido
  */
-public class PedidoDAO implements ICrudDAO<Pedido> {
+public class ProductoDAO implements ICrudDAO<Pedido> {
 
     /**
      * Agrega un pedido a la lista.
