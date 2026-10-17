@@ -6,6 +6,7 @@ package co.edu.poligran.paradigmas.polirestaurante.dao;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.DetallePedido;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -23,7 +24,8 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
      * @param detalle detalle que se desea registrar
      * @return el detalle registrado, con su id asignado
      * @throws IllegalArgumentException si la lista o el detalle son {@code null},
-     *                                  o si ya existe un detalle con el mismo id
+     *                                  si el detalle no tiene un {@code idPedido}
+     *                                  válido, o si ya existe un detalle con el mismo id
      */
     @Override
     public DetallePedido crear(List<DetallePedido> lista, DetallePedido detalle) {
@@ -43,7 +45,8 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
      * @param lista   lista en memoria de detalles de pedido
      * @param detalle detalle con los datos actualizados
      * @return el detalle actualizado, o {@code null} si no existe uno con ese id
-     * @throws IllegalArgumentException si la lista o el detalle son {@code null}
+     * @throws IllegalArgumentException si la lista o el detalle son {@code null},
+     *                                  o si el detalle no tiene un {@code idPedido} válido
      */
     @Override
     public DetallePedido actualizar(List<DetallePedido> lista, DetallePedido detalle) {
@@ -70,6 +73,21 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
     }
  
     /**
+     * Elimina todos los detalles que pertenecen a un pedido.
+     * <p>
+     * Se usa al eliminar un pedido, para mantener la composición: sin pedido
+     * no pueden quedar detalles huérfanos.
+     * </p>
+     *
+     * @param lista    lista en memoria de detalles de pedido
+     * @param idPedido identificador del pedido cuyos detalles se eliminan
+     * @return {@code true} si se eliminó al menos un detalle
+     */
+    public boolean eliminarPorPedido(List<DetallePedido> lista, int idPedido) {
+        return lista.removeIf(d -> d.getIdPedido() == idPedido);
+    }
+ 
+    /**
      * Busca un detalle por su identificador.
      *
      * @param lista lista en memoria de detalles de pedido
@@ -87,10 +105,20 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
     }
  
     /**
+     * Busca todos los detalles que pertenecen a un pedido.
+     *
+     * @param lista    lista en memoria de detalles de pedido
+     * @param idPedido identificador del pedido
+     * @return lista (posiblemente vacía) con los detalles del pedido
+     */
+    public List<DetallePedido> buscarPorPedido(List<DetallePedido> lista, int idPedido) {
+        return lista.stream()
+                .filter(d -> d.getIdPedido() == idPedido)
+                .collect(Collectors.toList());
+    }
+ 
+    /**
      * Calcula el total de una lista de detalles sumando el subtotal de cada uno.
-     * <p>
-     * Sirve para obtener el valor total de un pedido a partir de sus detalles.
-     * </p>
      *
      * @param lista lista en memoria de detalles de pedido
      * @return la suma de los subtotales; 0 si la lista está vacía
@@ -105,6 +133,21 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
             total += d.getSubtotal();
         }
         return total;
+    }
+ 
+    /**
+     * Calcula el total de un pedido sumando los subtotales de sus detalles.
+     *
+     * @param lista    lista en memoria de detalles de pedido
+     * @param idPedido identificador del pedido
+     * @return el total del pedido; 0 si no tiene detalles
+     * @throws IllegalArgumentException si la lista es {@code null}
+     */
+    public double calcularTotalPedido(List<DetallePedido> lista, int idPedido) {
+        if (lista == null) {
+            throw new IllegalArgumentException("La lista de detalles no puede ser nula");
+        }
+        return calcularTotal(buscarPorPedido(lista, idPedido));
     }
  
     /**
@@ -133,11 +176,13 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
     }
  
     /**
-     * Verifica que la lista y el detalle no sean nulos.
+     * Verifica que la lista y el detalle no sean nulos y que el detalle
+     * pertenezca a un pedido (composición).
      *
      * @param lista   lista a validar
      * @param detalle detalle a validar
-     * @throws IllegalArgumentException si alguno de los parámetros es {@code null}
+     * @throws IllegalArgumentException si la lista o el detalle son {@code null},
+     *                                  o si el {@code idPedido} es menor o igual a cero
      */
     private void validar(List<DetallePedido> lista, DetallePedido detalle) {
         if (lista == null) {
@@ -146,5 +191,9 @@ public class DetallePedidoDAO implements ICrudDAO<DetallePedido> {
         if (detalle == null) {
             throw new IllegalArgumentException("El detalle no puede ser nulo");
         }
+        if (detalle.getIdPedido() <= 0) {
+            throw new IllegalArgumentException("El detalle debe pertenecer a un pedido (idPedido > 0)");
+        }
     }
 }
+ 

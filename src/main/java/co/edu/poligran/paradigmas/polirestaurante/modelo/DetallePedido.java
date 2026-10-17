@@ -11,24 +11,29 @@ package co.edu.poligran.paradigmas.polirestaurante.modelo;
 public class DetallePedido {
  
     private int idDetalle;
+    private int idPedido;
     private double precioUnitario;
     private int cantidad;
  
     public DetallePedido() {
     }
  
-    public DetallePedido(double precioUnitario, int cantidad) {
+    public DetallePedido(int idPedido, double precioUnitario, int cantidad) {
+        this.idPedido = idPedido;
         this.precioUnitario = precioUnitario;
         this.cantidad = cantidad;
     }
  
-    public DetallePedido(int idDetalle, double precioUnitario, int cantidad) {
-        this(precioUnitario, cantidad);
+    public DetallePedido(int idDetalle, int idPedido, double precioUnitario, int cantidad) {
+        this(idPedido, precioUnitario, cantidad);
         this.idDetalle = idDetalle;
     }
  
     public int getIdDetalle() { return idDetalle; }
     public void setIdDetalle(int idDetalle) { this.idDetalle = idDetalle; }
+ 
+    public int getIdPedido() { return idPedido; }
+    public void setIdPedido(int idPedido) { this.idPedido = idPedido; }
  
     public double getPrecioUnitario() { return precioUnitario; }
     public void setPrecioUnitario(double precioUnitario) { this.precioUnitario = precioUnitario; }
@@ -47,7 +52,8 @@ public class DetallePedido {
  
     @Override
     public String toString() {
-        return "[" + idDetalle + "] cantidad: " + cantidad
+        return "[" + idDetalle + "] pedido: " + idPedido
+                + " - cantidad: " + cantidad
                 + " - precio unitario: " + precioUnitario
                 + " - subtotal: " + getSubtotal();
     }
