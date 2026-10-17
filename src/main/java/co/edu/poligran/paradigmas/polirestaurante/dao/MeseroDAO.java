@@ -4,7 +4,7 @@
  */
 package co.edu.poligran.paradigmas.polirestaurante.dao;
 
-import com.mycompany.polirestaurante.modelo.Mesero;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesero;
 import java.util.Collections;
 import java.util.List;
 

@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.polirestaurante.dao;
+package co.edu.poligran.paradigmas.polirestaurante.dao;
 
-import com.mycompany.polirestaurante.modelo.Cliente;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Cliente;
 import java.util.Collections;
 import java.util.List;
 

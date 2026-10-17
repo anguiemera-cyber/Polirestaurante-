@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package co.edu.poligran.paradigmas.polirestaurante.dao;
-import com.mycompany.polirestaurante.modelo.Administrador;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Administrador;
 import java.util.Collections;
 import java.util.List;
 
