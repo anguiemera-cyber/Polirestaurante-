@@ -1,6 +1,8 @@
+
 package co.edu.poligran.paradigmas.polirestaurante.dao;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Pedido;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
      * Registra un pedido en la lista.
      * <p>
      * Si el identificador del pedido es menor o igual a cero, se asigna
-     * automáticamente el siguiente id disponible.
+     * automáticamente el siguiente ID disponible.
      * </p>
      *
      * @param lista lista en memoria de pedidos
@@ -59,7 +61,9 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         validar(lista, pedido);
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getid() == pedido.getid()) {
+            Pedido actual = lista.get(i);
+
+            if (actual != null && actual.getid() == pedido.getid()) {
                 lista.set(i, pedido);
                 return pedido;
             }
@@ -73,7 +77,7 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
      *
      * @param lista lista en memoria de pedidos
      * @param id identificador del pedido a eliminar
-     * @return {@code true} si el pedido fue eliminado;
+     * @return {@code true} si se eliminó al menos un pedido;
      * {@code false} si no se encontró o la lista es nula
      */
     @Override
@@ -82,7 +86,8 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
             return false;
         }
 
-        return lista.removeIf(p -> p.getid() == id);
+        return lista.removeIf(
+                p -> p != null && p.getid() == id);
     }
 
     /**
@@ -99,7 +104,7 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         }
 
         for (Pedido p : lista) {
-            if (p.getid() == id) {
+            if (p != null && p.getid() == id) {
                 return p;
             }
         }
@@ -112,7 +117,7 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
      *
      * @param lista lista en memoria de pedidos
      * @return una vista no modificable de la lista de pedidos;
-     * si la lista es nula retorna una lista vacía
+     * si la lista es nula, retorna una lista vacía
      */
     @Override
     public List<Pedido> listar(List<Pedido> lista) {
@@ -140,16 +145,23 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
             return Collections.emptyList();
         }
 
-        return lista.stream()
-                .filter(p -> p.getmesa() != null
-                        && p.getmesa().equalsIgnoreCase(mesa))
-                .toList();
+        List<Pedido> resultado = new ArrayList<>();
+
+        for (Pedido p : lista) {
+            if (p != null
+                    && p.getmesa() != null
+                    && p.getmesa().equalsIgnoreCase(mesa)) {
+                resultado.add(p);
+            }
+        }
+
+        return resultado;
     }
 
     /**
      * Calcula el siguiente identificador disponible para un pedido.
      * <p>
-     * El valor retornado corresponde al id más alto encontrado en la lista
+     * El valor retornado corresponde al ID más alto encontrado en la lista
      * más uno.
      * </p>
      *
@@ -160,7 +172,9 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
         int max = 0;
 
         for (Pedido p : lista) {
-            max = Math.max(max, p.getid());
+            if (p != null) {
+                max = Math.max(max, p.getid());
+            }
         }
 
         return max + 1;
@@ -171,18 +185,17 @@ public class PedidoDAO implements ICrudDAO<Pedido> {
      *
      * @param lista lista de pedidos a validar
      * @param pedido pedido a validar
-     * @throws IllegalArgumentException si la lista es nula
-     * @throws IllegalArgumentException si el pedido es nulo
-     * @throws IllegalArgumentException si el producto asociado al pedido es nulo
+     * @throws IllegalArgumentException si la lista o el pedido son nulos
      */
     private void validar(List<Pedido> lista, Pedido pedido) {
-
         if (lista == null) {
             throw new IllegalArgumentException(
                     "La lista de pedidos no puede ser nula");
         }
 
         if (pedido == null) {
+            throw new IllegalArgumentException(
+                    "El pedido no puede ser nulo");
         }
     }
 }
