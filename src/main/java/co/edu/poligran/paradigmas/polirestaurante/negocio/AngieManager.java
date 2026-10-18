@@ -1,13 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package co.edu.poligran.paradigmas.polirestaurante.negocio;
 
 import co.edu.poligran.paradigmas.polirestaurante.dao.CategoriaDAO;
+import co.edu.poligran.paradigmas.polirestaurante.dao.DetallePedidoDAO;
 import co.edu.poligran.paradigmas.polirestaurante.dao.IngredienteDAO;
 import co.edu.poligran.paradigmas.polirestaurante.dao.MesaDAO;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Categoria;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.DetallePedido;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesa;
 import java.util.ArrayList;
@@ -16,26 +15,28 @@ import java.util.List;
  *
  * Capa de negocio del restaurante.
  * <p>
- * Coordina los DAO de {@link Mesa}, {@link Ingrediente} y {@link Categoria},
- * y mantiene las listas materializadas en memoria:
+ * Coordina los DAO de {@link Mesa}, {@link Ingrediente}, {@link Categoria} y
+ * {@link DetallePedido}, y mantiene las listas materializadas en memoria:
  * </p>
  * <ul>
  *   <li><b>mesas</b>: lista en memoria de las mesas del restaurante.</li>
  *   <li><b>ingredientes</b>: lista en memoria de los ingredientes.</li>
  *   <li><b>categorias</b>: lista en memoria de las categorías.</li>
+ *   <li><b>detalles</b>: lista global de detalles de pedido, enlazada con
+ *       el pedido mediante {@code idPedido} (composición).</li>
  * </ul>
  * <p>
- * A diferencia de Teléfono y Correo en la agenda, estas tres entidades son
- * independientes entre sí, por lo que cada lista se administra por separado.
+ * Mesa, Ingrediente y Categoría son independientes entre sí, por lo que cada
+ * lista se administra por separado. Los detalles de pedido, en cambio,
+ * dependen de su pedido: sin pedido no deben quedar detalles huérfanos.
  * </p>
- *
- * @version 1.0
  * @see MesaDAO
  * @see IngredienteDAO
  * @see CategoriaDAO
+ * @see DetallePedidoDAO
  * @author anyim
  */
-public class Angiemanager {
+public class AngieManager {
     
     /** Lista materializada de mesas. */
     private final List<Mesa> mesas;
@@ -45,6 +46,9 @@ public class Angiemanager {
  
     /** Lista materializada de categorías. */
     private final List<Categoria> categorias;
+
+    /** Lista materializada global de detalles de pedido. */
+    private final List<DetallePedido> detalles;
  
     /** DAO para las operaciones sobre mesas. */
     private final MesaDAO mesaDAO;
@@ -54,17 +58,23 @@ public class Angiemanager {
  
     /** DAO para las operaciones sobre categorías. */
     private final CategoriaDAO categoriaDAO;
+
+    /** DAO para las operaciones sobre detalles de pedido. */
+    private final DetallePedidoDAO detallePedidoDAO;
  
     /**
-     * Crea un manager con las listas de mesas, ingredientes y categorías vacías.
+     * Crea un manager con las listas de mesas, ingredientes, categorías y
+     * detalles de pedido vacías.
      */
     public AngieManager() {
         this.mesas = new ArrayList<>();
         this.ingredientes = new ArrayList<>();
         this.categorias = new ArrayList<>();
+        this.detalles = new ArrayList<>();
         this.mesaDAO = new MesaDAO();
         this.ingredienteDAO = new IngredienteDAO();
         this.categoriaDAO = new CategoriaDAO();
+        this.detallePedidoDAO = new DetallePedidoDAO();
     }
  
     // =====================================================================
@@ -273,5 +283,107 @@ public class Angiemanager {
      */
     public boolean eliminarCategoria(int id) {
         return categoriaDAO.eliminar(categorias, id);
+    }
+
+    // =====================================================================
+    // Detalles de pedido
+    // =====================================================================
+
+    /**
+     * Registra un detalle de pedido.
+     *
+     * @param detalle detalle que se desea registrar; debe traer el
+     *                {@code idPedido} al que pertenece
+     * @return el detalle registrado, con su id asignado
+     * @throws IllegalArgumentException si el detalle es {@code null}, no tiene
+     *                                  {@code idPedido} válido o su id ya existe
+     */
+    public DetallePedido crearDetalle(DetallePedido detalle) {
+        return detallePedidoDAO.crear(detalles, detalle);
+    }
+
+    /**
+     * Obtiene todos los detalles de pedido registrados.
+     *
+     * @return vista no modificable de la lista global de detalles
+     */
+    public List<DetallePedido> listarDetalles() {
+        return detallePedidoDAO.listar(detalles);
+    }
+
+    /**
+     * Busca un detalle de pedido por su identificador.
+     *
+     * @param id identificador del detalle
+     * @return el detalle encontrado, o {@code null} si no existe
+     */
+    public DetallePedido buscarDetallePorId(int id) {
+        return detallePedidoDAO.buscarPorId(detalles, id);
+    }
+
+    /**
+     * Busca todos los detalles que pertenecen a un pedido.
+     *
+     * @param idPedido identificador del pedido
+     * @return lista (posiblemente vacía) con los detalles del pedido
+     * @see DetallePedidoDAO#buscarPorPedido(List, int)
+     */
+    public List<DetallePedido> buscarDetallesPorPedido(int idPedido) {
+        return detallePedidoDAO.buscarPorPedido(detalles, idPedido);
+    }
+
+    /**
+     * Calcula el total de un pedido sumando los subtotales de sus detalles.
+     *
+     * @param idPedido identificador del pedido
+     * @return el total del pedido; 0 si no tiene detalles
+     * @see DetallePedidoDAO#calcularTotalPedido(List, int)
+     */
+    public double calcularTotalPedido(int idPedido) {
+        return detallePedidoDAO.calcularTotalPedido(detalles, idPedido);
+    }
+
+    /**
+     * Actualiza el precio unitario y la cantidad de un detalle.
+     * <p>
+     * Se conserva el {@code idPedido} original, porque un detalle no puede
+     * cambiar de pedido.
+     * </p>
+     *
+     * @param datos detalle con el id a actualizar y los nuevos datos
+     * @return {@code true} si se actualizó; {@code false} si no existe un
+     *         detalle con ese id
+     */
+    public boolean actualizarDetalle(DetallePedido datos) {
+        DetallePedido actual = detallePedidoDAO.buscarPorId(detalles, datos.getIdDetalle());
+        if (actual == null) {
+            return false;
+        }
+        datos.setIdPedido(actual.getIdPedido());
+        return detallePedidoDAO.actualizar(detalles, datos) != null;
+    }
+
+    /**
+     * Elimina un detalle de pedido.
+     *
+     * @param id identificador del detalle a eliminar
+     * @return {@code true} si se eliminó; {@code false} si no existe
+     */
+    public boolean eliminarDetalle(int id) {
+        return detallePedidoDAO.eliminar(detalles, id);
+    }
+
+    /**
+     * Elimina en cascada todos los detalles de un pedido.
+     * <p>
+     * Debe llamarse al eliminar un pedido, para mantener la composición y no
+     * dejar detalles huérfanos.
+     * </p>
+     *
+     * @param idPedido identificador del pedido cuyos detalles se eliminan
+     * @return {@code true} si se eliminó al menos un detalle
+     */
+    public boolean eliminarDetallesDePedido(int idPedido) {
+        return detallePedidoDAO.eliminarPorPedido(detalles, idPedido);
     }
 }
