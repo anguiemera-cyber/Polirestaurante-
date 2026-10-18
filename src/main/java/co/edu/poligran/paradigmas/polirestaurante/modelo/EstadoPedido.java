@@ -1,7 +1,7 @@
 
 package co.edu.poligran.paradigmas.polirestaurante.modelo;
 
-public enum EstadoPedidoTipo {
+public enum EstadoPedido {
     PENDIENTE,
     EN_PREPARACION,
     LISTO,
