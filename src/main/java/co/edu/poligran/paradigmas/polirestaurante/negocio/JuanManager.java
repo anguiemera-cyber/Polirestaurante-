@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author salaG201
  */
-public class PoliRestauranteManager {
+public class JuanManager {
     /** Lista materializada de los administradores. */
     private final List<Administrador> administradores;
     /** Lista materializada de meseros */
