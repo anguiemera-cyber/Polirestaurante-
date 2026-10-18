@@ -1,49 +1,124 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package co.edu.poligran.paradigmas.polirestaurante.modelo;
 
-/**
- *
- * @author salaG201
- */
 public class Cocinero {
-    Persona cocinero;
-    Ingrediente administrar;
-    Pedido preparar;
-    private String usuario;
+
+    private Persona cocinero;
+    private Ingrediente administrar;
+    private Pedido preparar;
+
+    private String apellido;
+    private int tipoDoc;
+    private long numeroDoc;
+    private long celular;
+    private String correo;
     private String contraseña;
-    
-    public Cocinero(Persona cocinero, String usuario, String contraseña){
-        this.cocinero=cocinero;
-        this.usuario=usuario;
-        this.contraseña=contraseña;
-    }
-    
-    public Cocinero(Ingrediente administrar, Pedido preparar){
-        this.preparar=preparar;
-        this.administrar=administrar;
-    }
-    
-     public int getPersona() { return Persona; }
-    public void setPersona(int id) { this.Persona = Persona; }
+    private String usuario;
 
-    public int getcantidad() { return cantidad; }
-    public void setcantidad(int cantidad) { this.cantidad = this.cantidad; }
+    public Cocinero(Persona cocinero, String apellido, int tipoDoc,
+            long numeroDoc, long celular, String correo,
+            String contraseña, String usuario) {
 
-    public Producto getproductopedido() { return productopedido; }
-    public void setproductopedido(Producto productopedido) { this.productopedido = productopedido; }
-    
-    public long getcosto() { return costo; }
-    public void setcosto(long costo) { this.costo = this.costo; }
-    
-    public String getmesa() { return mesa; }
-    public void setmesa(String mesa) { this.mesa = this.mesa; }
-    
-    public String getdetalles() { return detalles; }
-    public void setdetalles(String detalles) { this.detalles = this.detalles; }
-    
-    public String tostring() {
-        return "[" + id + "] " + cantidad + " " + productopedido +" "+ detalles;
+        this.cocinero = cocinero;
+        this.apellido = apellido;
+        this.tipoDoc = tipoDoc;
+        this.numeroDoc = numeroDoc;
+        this.celular = celular;
+        this.correo = correo;
+        this.contraseña = contraseña;
+        this.usuario = usuario;
+    }
+
+    public Cocinero(Ingrediente administrar, Pedido preparar) {
+        this.administrar = administrar;
+        this.preparar = preparar;
+    }
+
+    public Persona getCocinero() {
+        return cocinero;
+    }
+
+    public void setCocinero(Persona cocinero) {
+        this.cocinero = cocinero;
+    }
+
+    public Ingrediente getAdministrar() {
+        return administrar;
+    }
+
+    public void setAdministrar(Ingrediente administrar) {
+        this.administrar = administrar;
+    }
+
+    public Pedido getPreparar() {
+        return preparar;
+    }
+
+    public void setPreparar(Pedido preparar) {
+        this.preparar = preparar;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public int getTipoDoc() {
+        return tipoDoc;
+    }
+
+    public void setTipoDoc(int tipoDoc) {
+        this.tipoDoc = tipoDoc;
+    }
+
+    public long getNumeroDoc() {
+        return numeroDoc;
+    }
+
+    public void setNumeroDoc(long numeroDoc) {
+        this.numeroDoc = numeroDoc;
+    }
+
+    public long getCelular() {
+        return celular;
+    }
+
+    public void setCelular(long celular) {
+        this.celular = celular;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getContraseña() {
+        return contraseña;
+    }
+
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    @Override
+    public String toString() {
+        return "Cocinero: " + usuario
+                + " | Apellido: " + apellido
+                + " | Documento: " + numeroDoc
+                + " | Correo: " + correo;
+    }
 }
