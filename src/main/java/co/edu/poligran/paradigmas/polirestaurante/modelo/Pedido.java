@@ -15,38 +15,86 @@ public class Pedido {
     private long costo;
     private String mesa;
     private String detalles;
-  
-    public Pedido(int id){
-        this.id=id;
-    }
-    
-    public Pedido(Producto productopedido, int cantidad, long costo, String mesa, String detalles){
-        this.productopedido=productopedido;
-        this.cantidad=cantidad;
-        this.costo=costo;
-        this.mesa=mesa;
-        this.detalles=detalles;
-    }
-    
-    public int getid() { return id; }
-    public void setid(int id) { this.id = id; }
+    private EstadoPedidoTipo estado;
 
-    public int getcantidad() { return cantidad; }
-    public void setcantidad(int cantidad) { this.cantidad = this.cantidad; }
+    public Pedido(int id) {
+        this.id = id;
+        this.estado = EstadoPedidoTipo.PENDIENTE;
+    }
 
-    public Producto getproductopedido() { return productopedido; }
-    public void setproductopedido(Producto productopedido) { this.productopedido = productopedido; }
-    
-    public long getcosto() { return costo; }
-    public void setcosto(long costo) { this.costo = this.costo; }
-    
-    public String getmesa() { return mesa; }
-    public void setmesa(String mesa) { this.mesa = this.mesa; }
-    
-    public String getdetalles() { return detalles; }
-    public void setdetalles(String detalles) { this.detalles = this.detalles; }
-    
-    public String tostring() {
-        return "[" + id + "] " + cantidad + " " + productopedido +" "+ detalles;
+    public Pedido(Producto productopedido, int cantidad,
+                  long costo, String mesa, String detalles) {
+        this.productopedido = productopedido;
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.mesa = mesa;
+        this.detalles = detalles;
+        this.estado = EstadoPedidoTipo.PENDIENTE;
+    }
+
+    public int getid() {
+        return id;
+    }
+
+    public void setid(int id) {
+        this.id = id;
+    }
+
+    public int getcantidad() {
+        return cantidad;
+    }
+
+    public void setcantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public Producto getproductopedido() {
+        return productopedido;
+    }
+
+    public void setproductopedido(Producto productopedido) {
+        this.productopedido = productopedido;
+    }
+
+    public long getcosto() {
+        return costo;
+    }
+
+    public void setcosto(long costo) {
+        this.costo = costo;
+    }
+
+    public String getmesa() {
+        return mesa;
+    }
+
+    public void setmesa(String mesa) {
+        this.mesa = mesa;
+    }
+
+    public String getdetalles() {
+        return detalles;
+    }
+
+    public void setdetalles(String detalles) {
+        this.detalles = detalles;
+    }
+
+    public EstadoPedidoTipo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoPedidoTipo estado) {
+        this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + id + "] "
+                + cantidad + " " + productopedido
+                + " - Mesa: " + mesa
+                + " - Costo: " + costo
+                + " - Detalles: " + detalles
+                + " - Estado: " + estado;
     }
 }
