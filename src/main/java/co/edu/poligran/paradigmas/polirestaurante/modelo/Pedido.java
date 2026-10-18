@@ -15,11 +15,11 @@ public class Pedido {
     private long costo;
     private String mesa;
     private String detalles;
-    private EstadoPedidoTipo estado;
+    private EstadoPedido estado;
 
     public Pedido(int id) {
         this.id = id;
-        this.estado = EstadoPedidoTipo.PENDIENTE;
+        this.estado = EstadoPedido.PENDIENTE;
     }
 
     public Pedido(Producto productopedido, int cantidad,
@@ -29,7 +29,7 @@ public class Pedido {
         this.costo = costo;
         this.mesa = mesa;
         this.detalles = detalles;
-        this.estado = EstadoPedidoTipo.PENDIENTE;
+        this.estado = EstadoPedido.PENDIENTE;
     }
 
     public int getid() {
@@ -80,11 +80,11 @@ public class Pedido {
         this.detalles = detalles;
     }
 
-    public EstadoPedidoTipo getEstado() {
+    public EstadoPedido getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoPedidoTipo estado) {
+    public void setEstado(EstadoPedido estado) {
         this.estado = estado;
     }
 
