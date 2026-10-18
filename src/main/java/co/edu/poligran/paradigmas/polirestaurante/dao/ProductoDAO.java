@@ -1,120 +1,101 @@
+
 package co.edu.poligran.paradigmas.polirestaurante.dao;
 
-import co.edu.poligran.paradigmas.polirestaurante.modelo.Pedido;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Producto;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Objeto de Acceso a Datos (DAO) para la entidad {@link Pedido}.
- * <p>
- * Implementa las operaciones CRUD de {@link ICrudDAO} sobre listas en
- * memoria y añade búsquedas relacionadas con los pedidos.
- * </p>
+ * Objeto de Acceso a Datos (DAO) para la entidad Producto.
+ *
+ * Implementa las operaciones CRUD sobre listas en memoria.
+ * También permite buscar productos por su nombre.
  *
  * @version 1.0
  * @see ICrudDAO
- * @see Pedido
+ * @see Producto
  */
-public class ProductoDAO implements ICrudDAO<Pedido> {
+public class ProductoDAO implements ICrudDAO<Producto> {
 
-    /**
-     * Agrega un pedido a la lista.
-     * <p>
-     * Si el id del pedido es menor o igual a cero, se asigna automáticamente
-     * el siguiente identificador disponible.
-     * </p>
-     *
-     * @param lista lista en memoria de pedidos
-     * @param pedido pedido que se desea registrar
-     * @return el pedido registrado
-     * @throws IllegalArgumentException si la lista o el pedido son nulos,
-     * o si ya existe un pedido con el mismo id
-     */
+    // Registra un producto nuevo en la lista.
+    // Si el producto no tiene un ID válido, le asigna uno automáticamente.
+    // Si el ID ya existe, genera una excepción para evitar duplicados.
+
     @Override
-    public Pedido crear(List<Pedido> lista, Pedido pedido) {
-        validar(lista, pedido);
+    public Producto crear(List<Producto> lista, Producto producto) {
+        validar(lista, producto);
 
-        if (pedido.getid() <= 0) {
-            pedido.setid(siguienteId(lista));
-        } else if (buscarPorId(lista, pedido.getid()) != null) {
+        if (producto.getid() <= 0) {
+            producto.setid(siguienteId(lista));
+        } else if (buscarPorId(lista, producto.getid()) != null) {
             throw new IllegalArgumentException(
-                "Ya existe un pedido con id " + pedido.getid()
+                "Ya existe un producto con id " + producto.getid()
             );
         }
 
-        lista.add(pedido);
-        return pedido;
+        lista.add(producto);
+        return producto;
     }
 
-    /**
-     * Actualiza la información de un pedido existente.
-     *
-     * @param lista lista en memoria de pedidos
-     * @param pedido pedido con los datos actualizados
-     * @return el pedido actualizado o {@code null} si no existe
-     * @throws IllegalArgumentException si la lista o el pedido son nulos
-     */
+    // Busca un producto mediante su ID.
+    // Si lo encuentra, reemplaza el objeto por los datos actualizados.
+    // Si no existe, devuelve null.
+
     @Override
-    public Pedido actualizar(List<Pedido> lista, Pedido pedido) {
-        validar(lista, pedido);
+    public Producto actualizar(List<Producto> lista, Producto producto) {
+        validar(lista, producto);
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getid() == pedido.getid()) {
-                lista.set(i, pedido);
-                return pedido;
+            if (lista.get(i).getid() == producto.getid()) {
+                lista.set(i, producto);
+                return producto;
             }
         }
 
         return null;
     }
 
-    /**
-     * Elimina un pedido según su identificador.
-     *
-     * @param lista lista en memoria de pedidos
-     * @param id identificador del pedido a eliminar
-     * @return {@code true} si el pedido fue eliminado;
-     * {@code false} si no existe o la lista es nula
-     */
+   
+    // Elimina el producto que tenga el ID indicado.
+    // Devuelve true si lo elimina y false si no existe o la lista es null.
+
     @Override
-    public boolean eliminar(List<Pedido> lista, int id) {
+    public boolean eliminar(List<Producto> lista, int id) {
         if (lista == null) {
             return false;
         }
 
-        return lista.removeIf(p -> p.getid() == id);
+        return lista.removeIf(
+            producto -> producto != null && producto.getid() == id
+        );
     }
 
-    /**
-     * Busca un pedido por su identificador.
-     *
-     * @param lista lista en memoria de pedidos
-     * @param id identificador del pedido
-     * @return el pedido encontrado o {@code null} si no existe
-     */
+    
+    // Recorre la lista hasta encontrar el producto con el ID solicitado.
+    // Si no encuentra coincidencias, devuelve null.
+
     @Override
-    public Pedido buscarPorId(List<Pedido> lista, int id) {
+    public Producto buscarPorId(List<Producto> lista, int id) {
         if (lista == null) {
             return null;
         }
 
-        for (Pedido p : lista) {
-            if (p.getid() == id) {
-                return p;
+        for (Producto producto : lista) {
+            if (producto != null && producto.getid() == id) {
+                return producto;
             }
         }
 
         return null;
     }
 
-    /**
-     * Obtiene todos los pedidos registrados.
-     *
-     * @param lista lista en memoria de pedidos
-     * @return una vista no modificable de los pedidos
-     */
+    
+    // Devuelve todos los productos registrados.
+    // La lista retornada no permite agregar ni eliminar elementos
+    // directamente desde el objeto que la recibe.
+
     @Override
-    public List<Pedido> listar(List<Pedido> lista) {
+    public List<Producto> listar(List<Producto> lista) {
         if (lista == null) {
             return Collections.emptyList();
         }
@@ -122,67 +103,59 @@ public class ProductoDAO implements ICrudDAO<Pedido> {
         return Collections.unmodifiableList(lista);
     }
 
-    /**
-     * Busca todos los pedidos asociados a una mesa.
-     * <p>
-     * La comparación ignora diferencias entre mayúsculas y minúsculas.
-     * </p>
-     *
-     * @param lista lista en memoria de pedidos
-     * @param mesa número o nombre de la mesa
-     * @return lista de pedidos asociados a la mesa indicada
-     */
-    public List<Pedido> buscarPorMesa(List<Pedido> lista, String mesa) {
-        if (lista == null || mesa == null) {
-            return Collections.emptyList();
+   
+    // Compara los nombres ignorando mayúsculas y minúsculas.
+    // También ignora los espacios al inicio y al final del texto.
+    // Devuelve el primer producto que coincida o null si no existe.
+
+    public Producto buscarPorNombre(List<Producto> lista, String nombre) {
+        if (lista == null || nombre == null) {
+            return null;
         }
 
-        return lista.stream()
-                .filter(p -> mesa.equalsIgnoreCase(p.getmesa()))
-                .toList();
+        for (Producto producto : lista) {
+            if (producto != null
+                    && producto.getnombre() != null
+                    && producto.getnombre().trim()
+                        .equalsIgnoreCase(nombre.trim())) {
+                return producto;
+            }
+        }
+
+        return null;
     }
 
-    /**
-     * Calcula el siguiente identificador disponible.
-     *
-     * @param lista lista de pedidos
-     * @return el id máximo encontrado más uno
-     */
-    private int siguienteId(List<Pedido> lista) {
+    
+    // Busca el identificador más alto de la lista y le suma uno.
+    // Esto permite asignar IDs consecutivos a los productos nuevos.
+
+    private int siguienteId(List<Producto> lista) {
         int max = 0;
 
-        for (Pedido p : lista) {
-            max = Math.max(max, p.getid());
+        for (Producto producto : lista) {
+            if (producto != null) {
+                max = Math.max(max, producto.getid());
+            }
         }
 
         return max + 1;
     }
 
-    /**
-     * Verifica que los parámetros obligatorios sean válidos.
-     *
-     * @param lista lista de pedidos
-     * @param pedido pedido a validar
-     * @throws IllegalArgumentException si alguno de los parámetros es nulo
-     * o si el producto asociado al pedido es nulo
-     */
-    private void validar(List<Pedido> lista, Pedido pedido) {
+    
+    // Comprueba que la lista y el producto existan antes de ejecutar
+    // operaciones que dependen de ambos parámetros.
+    // Si alguno es null, informa el error mediante una excepción.
 
+    private void validar(List<Producto> lista, Producto producto) {
         if (lista == null) {
             throw new IllegalArgumentException(
-                "La lista de pedidos no puede ser nula"
+                "La lista de productos no puede ser nula"
             );
         }
 
-        if (pedido == null) {
+        if (producto == null) {
             throw new IllegalArgumentException(
-                "El pedido no puede ser nulo"
-            );
-        }
-
-        if (pedido.getproductopedido() == null) {
-            throw new IllegalArgumentException(
-                "El producto del pedido no puede ser nulo"
+                "El producto no puede ser nulo"
             );
         }
     }
