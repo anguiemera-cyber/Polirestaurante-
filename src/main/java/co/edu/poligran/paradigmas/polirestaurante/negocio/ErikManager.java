@@ -19,8 +19,6 @@ import java.util.List;
  *
  * Coordina las operaciones entre los modelos y sus DAO.
  *
- * @author Erik
- * @version 1.0
  */
 public class ErikManager {
 
