@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * Administra las operaciones de administradores, meseros y clientes.
  *
- * @author Juan
  */
 public class JuanManager {
 
