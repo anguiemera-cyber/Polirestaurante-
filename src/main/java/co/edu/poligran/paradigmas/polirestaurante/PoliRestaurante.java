@@ -29,9 +29,9 @@ import java.util.Scanner;
  */
 public class PoliRestaurante {
 
-    private static final AngieManager angie = new AngieManager();
-    private static final ErikManager erik = new ErikManager();
-    private static final JuanManager juan = new JuanManager();
+    private static final AngieManager catalogo = new AngieManager();
+    private static final ErikManager operaciones = new ErikManager();
+    private static final JuanManager personal = new JuanManager();
     private static final Scanner sc = new Scanner(System.in);
 
     private static final String NL = System.lineSeparator();
@@ -54,9 +54,9 @@ public class PoliRestaurante {
                     "Administradores, meseros y clientes ");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
-                case 1: menuAngie(); break;
-                case 2: menuErik(); break;
-                case 3: menuJuan(); break;
+                case 1: menuCatalogo(); break;
+                case 2: menuOperaciones(); break;
+                case 3: menuPersonal(); break;
                 case 0: System.out.println("¡Hasta pronto!"); break;
                 default: System.out.println(INVALIDA);
             }
@@ -67,10 +67,10 @@ public class PoliRestaurante {
     // Menús de módulos
     // =====================================================================
 
-    private static void menuAngie() {
+    private static void menuCatalogo() {
         int opcion;
         do {
-            mostrarMenu("ANGIE", "Gestionar mesas", "Gestionar ingredientes",
+            mostrarMenu("GESTIÓN DE CATÁLOGO", "Gestionar mesas", "Gestionar ingredientes",
                     "Gestionar categorías", "Gestionar detalles de pedido");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
@@ -84,10 +84,10 @@ public class PoliRestaurante {
         } while (opcion != 0);
     }
 
-    private static void menuErik() {
+    private static void menuOperaciones() {
         int opcion;
         do {
-            mostrarMenu("ERIK", "Gestionar pedidos", "Gestionar productos",
+            mostrarMenu("GESTIÓN DE PEDIDOS", "Gestionar pedidos", "Gestionar productos",
                     "Gestionar cocineros");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
@@ -100,10 +100,10 @@ public class PoliRestaurante {
         } while (opcion != 0);
     }
 
-    private static void menuJuan() {
+    private static void menuPersonal() {
         int opcion;
         do {
-            mostrarMenu("JUAN", "Gestionar administradores", "Gestionar meseros",
+            mostrarMenu("GESTIÓN DE PERSONAL", "Gestionar administradores", "Gestionar meseros",
                     "Gestionar clientes");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
@@ -117,7 +117,7 @@ public class PoliRestaurante {
     }
 
     // =====================================================================
-    // Submenús (Angie)
+    // Submenús de catálogo
     // =====================================================================
 
     private static void menuMesas() {
@@ -199,7 +199,7 @@ public class PoliRestaurante {
     }
 
     // =====================================================================
-    // Submenús (Erik)
+    // Submenús de pedidos
     // =====================================================================
 
     private static void menuPedidos() {
@@ -263,7 +263,7 @@ public class PoliRestaurante {
     }
 
     // =====================================================================
-    // Submenús (Juan)
+    // Submenús de personal
     // =====================================================================
 
     private static void menuAdministradores() {
@@ -328,25 +328,25 @@ public class PoliRestaurante {
     private static void crearMesa() {
         int cantidad = leerEnteroNoNegativo("Capacidad (personas): ");
         int estado = leerEntero("Estado (número): ");
-        Mesa m = angie.crearMesa(new Mesa(cantidad, estado));
+        Mesa m = catalogo.crearMesa(new Mesa(cantidad, estado));
         System.out.println("Mesa creada con id: " + m.getId());
     }
 
     private static void listarMesas() {
-        imprimirLista(angie.listarMesas());
+        imprimirLista(catalogo.listarMesas());
     }
 
     private static void buscarMesa() {
-        Mesa m = angie.buscarMesaPorId(leerEntero("Id de la mesa: "));
+        Mesa m = catalogo.buscarMesaPorId(leerEntero("Id de la mesa: "));
         System.out.println(m == null ? NO_ENCONTRADO : m.toString());
     }
 
     private static void buscarMesasPorEstado() {
-        imprimirLista(angie.buscarMesasPorEstado(leerEntero("Estado a buscar: ")));
+        imprimirLista(catalogo.buscarMesasPorEstado(leerEntero("Estado a buscar: ")));
     }
 
     private static void actualizarMesa() {
-        Mesa actual = angie.buscarMesaPorId(leerEntero("Id de la mesa: "));
+        Mesa actual = catalogo.buscarMesaPorId(leerEntero("Id de la mesa: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -354,7 +354,7 @@ public class PoliRestaurante {
         System.out.println(actual);
         int cantidad = leerEnteroOpcional("Capacidad", actual.getCantidad());
         int estado = leerEnteroOpcional("Estado", actual.getEstado());
-        System.out.println(angie.actualizarMesa(new Mesa(actual.getId(), cantidad, estado))
+        System.out.println(catalogo.actualizarMesa(new Mesa(actual.getId(), cantidad, estado))
                 ? "Mesa actualizada correctamente." : NO_ENCONTRADO);
     }
 
@@ -364,7 +364,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(angie.eliminarMesa(id) ? "Mesa eliminada." : NO_ENCONTRADO);
+        System.out.println(catalogo.eliminarMesa(id) ? "Mesa eliminada." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -376,25 +376,25 @@ public class PoliRestaurante {
         int estado = leerEntero("Estado (número): ");
         int cantidad = leerEnteroNoNegativo("Cantidad: ");
         boolean disponible = confirmar("¿Está disponible?");
-        Ingrediente i = angie.crearIngrediente(new Ingrediente(nombre, estado, cantidad, disponible));
+        Ingrediente i = catalogo.crearIngrediente(new Ingrediente(nombre, estado, cantidad, disponible));
         System.out.println("Ingrediente creado con id: " + i.getId());
     }
 
     private static void listarIngredientes() {
-        imprimirLista(angie.listarIngredientes());
+        imprimirLista(catalogo.listarIngredientes());
     }
 
     private static void listarIngredientesDisponibles() {
-        imprimirLista(angie.listarIngredientesDisponibles());
+        imprimirLista(catalogo.listarIngredientesDisponibles());
     }
 
     private static void buscarIngrediente() {
-        Ingrediente i = angie.buscarIngrediente(leerTexto("Nombre a buscar: "));
+        Ingrediente i = catalogo.buscarIngrediente(leerTexto("Nombre a buscar: "));
         System.out.println(i == null ? NO_ENCONTRADO : i.toString());
     }
 
     private static void actualizarIngrediente() {
-        Ingrediente actual = angie.buscarIngredientePorId(leerEntero("Id del ingrediente: "));
+        Ingrediente actual = catalogo.buscarIngredientePorId(leerEntero("Id del ingrediente: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -404,7 +404,7 @@ public class PoliRestaurante {
         int estado = leerEnteroOpcional("Estado", actual.getEstado());
         int cantidad = leerEnteroOpcional("Cantidad", actual.getCantidad());
         boolean disponible = leerBooleanOpcional("¿Disponible?", actual.isDisponibilidad());
-        System.out.println(angie.actualizarIngrediente(
+        System.out.println(catalogo.actualizarIngrediente(
                 new Ingrediente(actual.getId(), nombre, estado, cantidad, disponible))
                 ? "Ingrediente actualizado correctamente." : NO_ENCONTRADO);
     }
@@ -415,7 +415,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(angie.eliminarIngrediente(id) ? "Ingrediente eliminado." : NO_ENCONTRADO);
+        System.out.println(catalogo.eliminarIngrediente(id) ? "Ingrediente eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -425,21 +425,21 @@ public class PoliRestaurante {
     private static void crearCategoria() {
         String nombre = leerTexto("Nombre: ");
         String descripcion = leerTexto("Descripción: ");
-        Categoria c = angie.crearCategoria(new Categoria(nombre, descripcion));
+        Categoria c = catalogo.crearCategoria(new Categoria(nombre, descripcion));
         System.out.println("Categoría creada con id: " + c.getId());
     }
 
     private static void listarCategorias() {
-        imprimirLista(angie.listarCategorias());
+        imprimirLista(catalogo.listarCategorias());
     }
 
     private static void buscarCategoria() {
-        Categoria c = angie.buscarCategoria(leerTexto("Nombre a buscar: "));
+        Categoria c = catalogo.buscarCategoria(leerTexto("Nombre a buscar: "));
         System.out.println(c == null ? NO_ENCONTRADO : c.toString());
     }
 
     private static void actualizarCategoria() {
-        Categoria actual = angie.buscarCategoriaPorId(leerEntero("Id de la categoría: "));
+        Categoria actual = catalogo.buscarCategoriaPorId(leerEntero("Id de la categoría: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -447,7 +447,7 @@ public class PoliRestaurante {
         System.out.println(actual);
         String nombre = leerTextoOpcional("Nombre", actual.getNombre());
         String descripcion = leerTextoOpcional("Descripción", actual.getDescripcion());
-        System.out.println(angie.actualizarCategoria(new Categoria(actual.getId(), nombre, descripcion))
+        System.out.println(catalogo.actualizarCategoria(new Categoria(actual.getId(), nombre, descripcion))
                 ? "Categoría actualizada correctamente." : NO_ENCONTRADO);
     }
 
@@ -457,7 +457,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(angie.eliminarCategoria(id) ? "Categoría eliminada." : NO_ENCONTRADO);
+        System.out.println(catalogo.eliminarCategoria(id) ? "Categoría eliminada." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -466,31 +466,31 @@ public class PoliRestaurante {
 
     private static void crearDetalle() {
         int idPedido = leerEntero("Id del pedido: ");
-        if (erik.buscarPedidoPorId(idPedido) == null) {
+        if (operaciones.buscarPedidoPorId(idPedido) == null) {
             System.out.println("No existe un pedido con ese id; no se puede crear el detalle.");
             return;
         }
         double precio = leerDoubleNoNegativo("Precio unitario: ");
         int cantidad = leerEnteroPositivo("Cantidad: ");
-        DetallePedido d = angie.crearDetalle(new DetallePedido(idPedido, precio, cantidad));
+        DetallePedido d = catalogo.crearDetalle(new DetallePedido(idPedido, precio, cantidad));
         System.out.println("Detalle creado con id: " + d.getIdDetalle());
     }
 
     private static void listarDetalles() {
-        imprimirLista(angie.listarDetalles());
+        imprimirLista(catalogo.listarDetalles());
     }
 
     private static void buscarDetallesPorPedido() {
-        imprimirLista(angie.buscarDetallesPorPedido(leerEntero("Id del pedido: ")));
+        imprimirLista(catalogo.buscarDetallesPorPedido(leerEntero("Id del pedido: ")));
     }
 
     private static void calcularTotalPedido() {
         int idPedido = leerEntero("Id del pedido: ");
-        System.out.println("Total del pedido " + idPedido + ": " + angie.calcularTotalPedido(idPedido));
+        System.out.println("Total del pedido " + idPedido + ": " + catalogo.calcularTotalPedido(idPedido));
     }
 
     private static void actualizarDetalle() {
-        DetallePedido actual = angie.buscarDetallePorId(leerEntero("Id del detalle: "));
+        DetallePedido actual = catalogo.buscarDetallePorId(leerEntero("Id del detalle: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -499,7 +499,7 @@ public class PoliRestaurante {
         double precio = leerDoubleOpcional("Precio unitario", actual.getPrecioUnitario());
         int cantidad = leerEnteroOpcional("Cantidad", actual.getCantidad());
         DetallePedido datos = new DetallePedido(actual.getIdDetalle(), actual.getIdPedido(), precio, cantidad);
-        System.out.println(angie.actualizarDetalle(datos)
+        System.out.println(catalogo.actualizarDetalle(datos)
                 ? "Detalle actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -509,7 +509,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(angie.eliminarDetalle(id) ? "Detalle eliminado." : NO_ENCONTRADO);
+        System.out.println(catalogo.eliminarDetalle(id) ? "Detalle eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -525,12 +525,12 @@ public class PoliRestaurante {
         long costo = leerLongNoNegativo("Costo: ");
         String mesa = leerTexto("Mesa: ");
         String detalles = leerTexto("Detalles: ");
-        Pedido p = erik.crearPedido(new Pedido(producto, cantidad, costo, mesa, detalles));
+        Pedido p = operaciones.crearPedido(new Pedido(producto, cantidad, costo, mesa, detalles));
         System.out.println("Pedido creado con id: " + p.getid());
     }
 
     private static void listarPedidos() {
-        List<Pedido> lista = erik.listarPedidos();
+        List<Pedido> lista = operaciones.listarPedidos();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -541,12 +541,12 @@ public class PoliRestaurante {
     }
 
     private static void buscarPedido() {
-        Pedido p = erik.buscarPedidoPorId(leerEntero("Id del pedido: "));
+        Pedido p = operaciones.buscarPedidoPorId(leerEntero("Id del pedido: "));
         System.out.println(p == null ? NO_ENCONTRADO : describir(p));
     }
 
     private static void buscarPedidosPorMesa() {
-        List<Pedido> lista = erik.buscarPedidosPorMesa(leerTexto("Mesa a buscar: "));
+        List<Pedido> lista = operaciones.buscarPedidosPorMesa(leerTexto("Mesa a buscar: "));
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -557,7 +557,7 @@ public class PoliRestaurante {
     }
 
     private static void actualizarPedido() {
-        Pedido actual = erik.buscarPedidoPorId(leerEntero("Id del pedido: "));
+        Pedido actual = operaciones.buscarPedidoPorId(leerEntero("Id del pedido: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -570,12 +570,12 @@ public class PoliRestaurante {
         datos.setmesa(leerTextoOpcional("Mesa", actual.getmesa()));
         datos.setdetalles(leerTextoOpcional("Detalles", actual.getdetalles()));
         datos.setEstado(actual.getEstado());
-        System.out.println(erik.actualizarPedido(datos)
+        System.out.println(operaciones.actualizarPedido(datos)
                 ? "Pedido actualizado correctamente." : NO_ENCONTRADO);
     }
 
     private static void cambiarEstadoPedido() {
-        Pedido actual = erik.buscarPedidoPorId(leerEntero("Id del pedido: "));
+        Pedido actual = operaciones.buscarPedidoPorId(leerEntero("Id del pedido: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -589,7 +589,7 @@ public class PoliRestaurante {
         do {
             n = leerEntero("Nuevo estado: ");
         } while (n < 1 || n > estados.length);
-        System.out.println(erik.cambiarEstadoPedido(actual.getid(), estados[n - 1])
+        System.out.println(operaciones.cambiarEstadoPedido(actual.getid(), estados[n - 1])
                 ? "Estado actualizado." : NO_ENCONTRADO);
     }
 
@@ -599,9 +599,9 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        if (erik.eliminarPedido(id)) {
+        if (operaciones.eliminarPedido(id)) {
             // Composición: al eliminar el pedido se eliminan sus detalles.
-            angie.eliminarDetallesDePedido(id);
+            catalogo.eliminarDetallesDePedido(id);
             System.out.println("Pedido eliminado junto con sus detalles.");
         } else {
             System.out.println(NO_ENCONTRADO);
@@ -615,12 +615,12 @@ public class PoliRestaurante {
     private static void crearProducto() {
         String nombre = leerTexto("Nombre: ");
         String tipo = leerTexto("Tipo (ej. Bebida, Plato fuerte): ");
-        Producto p = erik.crearProducto(new Producto(nombre, tipo));
+        Producto p = operaciones.crearProducto(new Producto(nombre, tipo));
         System.out.println("Producto creado con id: " + p.getid());
     }
 
     private static void listarProductos() {
-        List<Producto> lista = erik.listarProductos();
+        List<Producto> lista = operaciones.listarProductos();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -631,12 +631,12 @@ public class PoliRestaurante {
     }
 
     private static void buscarProducto() {
-        Producto p = erik.buscarProductoPorNombre(leerTexto("Nombre a buscar: "));
+        Producto p = operaciones.buscarProductoPorNombre(leerTexto("Nombre a buscar: "));
         System.out.println(p == null ? NO_ENCONTRADO : describir(p));
     }
 
     private static void actualizarProducto() {
-        Producto actual = erik.buscarProductoPorId(leerEntero("Id del producto: "));
+        Producto actual = operaciones.buscarProductoPorId(leerEntero("Id del producto: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -646,7 +646,7 @@ public class PoliRestaurante {
                 leerTextoOpcional("Nombre", actual.getnombre()),
                 leerTextoOpcional("Tipo", actual.gettipo()));
         datos.setid(actual.getid());
-        System.out.println(erik.actualizarProducto(datos)
+        System.out.println(operaciones.actualizarProducto(datos)
                 ? "Producto actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -656,7 +656,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(erik.eliminarProducto(id) ? "Producto eliminado." : NO_ENCONTRADO);
+        System.out.println(operaciones.eliminarProducto(id) ? "Producto eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -672,13 +672,13 @@ public class PoliRestaurante {
         String correo = leerTexto("Correo: ");
         String contrasena = leerTexto("Contraseña: ");
         String usuario = leerTexto("Usuario: ");
-        Cocinero c = erik.crearCocinero(new Cocinero(new Persona(0, nombre), apellido,
+        Cocinero c = operaciones.crearCocinero(new Cocinero(new Persona(0, nombre), apellido,
                 tipoDoc, numeroDoc, celular, correo, contrasena, usuario));
         System.out.println("Cocinero creado con id: " + idCocinero(c));
     }
 
     private static void listarCocineros() {
-        List<Cocinero> lista = erik.listarCocineros();
+        List<Cocinero> lista = operaciones.listarCocineros();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -689,17 +689,17 @@ public class PoliRestaurante {
     }
 
     private static void buscarCocineroPorId() {
-        Cocinero c = erik.buscarCocineroPorId(leerEntero("Id del cocinero: "));
+        Cocinero c = operaciones.buscarCocineroPorId(leerEntero("Id del cocinero: "));
         System.out.println(c == null ? NO_ENCONTRADO : describir(c));
     }
 
     private static void buscarCocineroPorUsuario() {
-        Cocinero c = erik.buscarCocineroPorUsuario(leerTexto("Usuario a buscar: "));
+        Cocinero c = operaciones.buscarCocineroPorUsuario(leerTexto("Usuario a buscar: "));
         System.out.println(c == null ? NO_ENCONTRADO : describir(c));
     }
 
     private static void actualizarCocinero() {
-        Cocinero actual = erik.buscarCocineroPorId(leerEntero("Id del cocinero: "));
+        Cocinero actual = operaciones.buscarCocineroPorId(leerEntero("Id del cocinero: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -716,7 +716,7 @@ public class PoliRestaurante {
         String usuario = leerTextoOpcional("Usuario", actual.getUsuario());
         Cocinero datos = new Cocinero(new Persona(idCocinero(actual), nombre), apellido,
                 tipoDoc, numeroDoc, celular, correo, contrasena, usuario);
-        System.out.println(erik.actualizarCocinero(datos)
+        System.out.println(operaciones.actualizarCocinero(datos)
                 ? "Cocinero actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -726,7 +726,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(erik.eliminarCocinero(id) ? "Cocinero eliminado." : NO_ENCONTRADO);
+        System.out.println(operaciones.eliminarCocinero(id) ? "Cocinero eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -742,13 +742,13 @@ public class PoliRestaurante {
         String correo = leerTexto("Correo: ");
         String contrasena = leerTexto("Contraseña: ");
         String usuario = leerTexto("Usuario: ");
-        Administrador a = juan.crearAdministrador(new Administrador(0, nombre, apellido,
+        Administrador a = personal.crearAdministrador(new Administrador(0, nombre, apellido,
                 tipoDoc, numeroDoc, celular, correo, contrasena, usuario));
         System.out.println("Administrador creado con id: " + a.getId());
     }
 
     private static void listarAdministradores() {
-        List<Administrador> lista = juan.listarAdministradores();
+        List<Administrador> lista = personal.listarAdministradores();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -759,12 +759,12 @@ public class PoliRestaurante {
     }
 
     private static void buscarAdministrador() {
-        Administrador a = juan.buscarAdministradorPorId(leerEntero("Id del administrador: "));
+        Administrador a = personal.buscarAdministradorPorId(leerEntero("Id del administrador: "));
         System.out.println(a == null ? NO_ENCONTRADO : describir(a));
     }
 
     private static void actualizarAdministrador() {
-        Administrador actual = juan.buscarAdministradorPorId(leerEntero("Id del administrador: "));
+        Administrador actual = personal.buscarAdministradorPorId(leerEntero("Id del administrador: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -779,7 +779,7 @@ public class PoliRestaurante {
                 leerTextoOpcional("Correo", actual.getCorreo()),
                 leerTextoOpcional("Contraseña", actual.getContraseña()),
                 leerTextoOpcional("Usuario", actual.getUsuario()));
-        System.out.println(juan.actualizarAdministrador(datos) != null
+        System.out.println(personal.actualizarAdministrador(datos) != null
                 ? "Administrador actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -789,7 +789,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(juan.eliminarAdministrador(id) ? "Administrador eliminado." : NO_ENCONTRADO);
+        System.out.println(personal.eliminarAdministrador(id) ? "Administrador eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -804,13 +804,13 @@ public class PoliRestaurante {
         String correo = leerTexto("Correo: ");
         String contrasena = leerTexto("Contraseña: ");
         String usuario = leerTexto("Usuario: ");
-        Mesero m = juan.crearMesero(new Mesero(apellido, tipoDoc, numeroDoc, celular,
+        Mesero m = personal.crearMesero(new Mesero(apellido, tipoDoc, numeroDoc, celular,
                 correo, contrasena, usuario));
         System.out.println("Mesero creado con id: " + m.getId());
     }
 
     private static void listarMeseros() {
-        List<Mesero> lista = juan.listarMeseros();
+        List<Mesero> lista = personal.listarMeseros();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -821,12 +821,12 @@ public class PoliRestaurante {
     }
 
     private static void buscarMesero() {
-        Mesero m = juan.buscarMeseroPorId(leerEntero("Id del mesero: "));
+        Mesero m = personal.buscarMeseroPorId(leerEntero("Id del mesero: "));
         System.out.println(m == null ? NO_ENCONTRADO : describir(m));
     }
 
     private static void actualizarMesero() {
-        Mesero actual = juan.buscarMeseroPorId(leerEntero("Id del mesero: "));
+        Mesero actual = personal.buscarMeseroPorId(leerEntero("Id del mesero: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
@@ -841,7 +841,7 @@ public class PoliRestaurante {
                 leerTextoOpcional("Contraseña", actual.getContraseña()),
                 leerTextoOpcional("Usuario", actual.getUsuario()));
         datos.setId(actual.getId());
-        System.out.println(juan.actualizarMesero(datos) != null
+        System.out.println(personal.actualizarMesero(datos) != null
                 ? "Mesero actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -851,7 +851,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(juan.eliminarMesero(id) ? "Mesero eliminado." : NO_ENCONTRADO);
+        System.out.println(personal.eliminarMesero(id) ? "Mesero eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -859,12 +859,12 @@ public class PoliRestaurante {
     // =====================================================================
 
     private static void crearCliente() {
-        Cliente c = juan.crearCliente(new Cliente(0, leerTexto("Nombre: ")));
+        Cliente c = personal.crearCliente(new Cliente(0, leerTexto("Nombre: ")));
         System.out.println("Cliente creado con id: " + c.getId());
     }
 
     private static void listarClientes() {
-        List<Cliente> lista = juan.listarClientes();
+        List<Cliente> lista = personal.listarClientes();
         if (lista.isEmpty()) {
             System.out.println(SIN_REGISTROS);
             return;
@@ -875,19 +875,19 @@ public class PoliRestaurante {
     }
 
     private static void buscarCliente() {
-        Cliente c = juan.buscarClientePorId(leerEntero("Id del cliente: "));
+        Cliente c = personal.buscarClientePorId(leerEntero("Id del cliente: "));
         System.out.println(c == null ? NO_ENCONTRADO : describir(c));
     }
 
     private static void actualizarCliente() {
-        Cliente actual = juan.buscarClientePorId(leerEntero("Id del cliente: "));
+        Cliente actual = personal.buscarClientePorId(leerEntero("Id del cliente: "));
         if (actual == null) {
             System.out.println(NO_ENCONTRADO);
             return;
         }
         System.out.println(describir(actual));
         Cliente datos = new Cliente(actual.getId(), leerTextoOpcional("Nombre", actual.getNombre()));
-        System.out.println(juan.actualizarCliente(datos) != null
+        System.out.println(personal.actualizarCliente(datos) != null
                 ? "Cliente actualizado correctamente." : NO_ENCONTRADO);
     }
 
@@ -897,7 +897,7 @@ public class PoliRestaurante {
             System.out.println(CANCELADA);
             return;
         }
-        System.out.println(juan.eliminarCliente(id) ? "Cliente eliminado." : NO_ENCONTRADO);
+        System.out.println(personal.eliminarCliente(id) ? "Cliente eliminado." : NO_ENCONTRADO);
     }
 
     // =====================================================================
@@ -966,12 +966,12 @@ public class PoliRestaurante {
 
     /** Selecciona un producto existente (lo lista y pide el id). */
     private static Producto seleccionarProducto() {
-        if (erik.listarProductos().isEmpty()) {
+        if (operaciones.listarProductos().isEmpty()) {
             System.out.println("No hay productos registrados. Cree uno primero.");
             return null;
         }
         listarProductos();
-        Producto p = erik.buscarProductoPorId(leerEntero("Id del producto: "));
+        Producto p = operaciones.buscarProductoPorId(leerEntero("Id del producto: "));
         if (p == null) {
             System.out.println(NO_ENCONTRADO);
         }
