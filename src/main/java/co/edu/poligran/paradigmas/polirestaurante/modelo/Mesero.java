@@ -8,7 +8,7 @@ package co.edu.poligran.paradigmas.polirestaurante.modelo;
  *
  * @author salaG201
  */
-public class Mesero {
+public class Mesero extends Persona {
      private String apellido;
     private int tipoDoc;
     private long numeroDoc;
@@ -18,7 +18,8 @@ public class Mesero {
     private String usuario;
 
 
-public Mesero(String apellido, int tipoDoc, long numeroDoc, long celular, String correo, String contraseña, String usuario) {
+public Mesero(int id, String nombre, String apellido, int tipoDoc, long numeroDoc, long celular, String correo, String contraseña, String usuario) {
+        super(id, nombre);
         this.apellido = apellido;
         this.tipoDoc = tipoDoc;
         this.numeroDoc = numeroDoc;
@@ -92,12 +93,6 @@ public Mesero(String apellido, int tipoDoc, long numeroDoc, long celular, String
     public void responderPreguntas(){
          System.out.println("El mesero va responder una pregunta");
     }
-
-    public int getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public void setId(int siguienteId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 }
+
