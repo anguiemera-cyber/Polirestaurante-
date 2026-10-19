@@ -797,6 +797,7 @@ public class PoliRestaurante {
     // =====================================================================
 
     private static void crearMesero() {
+        String nombre = leerTexto("Nombre: ");
         String apellido = leerTexto("Apellido: ");
         int tipoDoc = leerEntero("Tipo de documento (número): ");
         long numeroDoc = leerLongNoNegativo("Número de documento: ");
@@ -804,7 +805,7 @@ public class PoliRestaurante {
         String correo = leerTexto("Correo: ");
         String contrasena = leerTexto("Contraseña: ");
         String usuario = leerTexto("Usuario: ");
-        Mesero m = personal.crearMesero(new Mesero(apellido, tipoDoc, numeroDoc, celular,
+        Mesero m = personal.crearMesero(new Mesero(0, nombre, apellido, tipoDoc, numeroDoc, celular,
                 correo, contrasena, usuario));
         System.out.println("Mesero creado con id: " + m.getId());
     }
@@ -832,7 +833,8 @@ public class PoliRestaurante {
             return;
         }
         System.out.println(describir(actual));
-        Mesero datos = new Mesero(
+        Mesero datos = new Mesero (actual.getId(),
+                leerTextoOpcional("Nombre", actual.getNombre()),
                 leerTextoOpcional("Apellido", actual.getApellido()),
                 leerEnteroOpcional("Tipo de documento", actual.getTipoDoc()),
                 leerLongOpcional("Número de documento", actual.getNumeroDoc()),
