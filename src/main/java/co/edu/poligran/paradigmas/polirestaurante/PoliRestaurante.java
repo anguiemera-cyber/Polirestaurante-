@@ -270,15 +270,16 @@ public class PoliRestaurante {
         int opcion;
         do {
             mostrarMenu("ADMINISTRADORES", "Crear administrador", "Listar administradores",
-                    "Buscar administrador por id", "Actualizar administrador",
+                    "Buscar administrador por id", "Buscar administrador por Usuario", "Actualizar administrador",
                     "Eliminar administrador");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
                 case 1: ejecutar(PoliRestaurante::crearAdministrador); break;
                 case 2: ejecutar(PoliRestaurante::listarAdministradores); break;
-                case 3: ejecutar(PoliRestaurante::buscarAdministrador); break;
-                case 4: ejecutar(PoliRestaurante::actualizarAdministrador); break;
-                case 5: ejecutar(PoliRestaurante::eliminarAdministrador); break;
+                case 3: ejecutar(PoliRestaurante::buscarAdministradorPorId); break;
+                case 4: ejecutar(PoliRestaurante::buscarAdministradorPorUsuario); break;
+                case 5: ejecutar(PoliRestaurante::actualizarAdministrador); break;
+                case 6: ejecutar(PoliRestaurante::eliminarAdministrador); break;
                 case 0: break;
                 default: System.out.println(INVALIDA);
             }
@@ -288,15 +289,16 @@ public class PoliRestaurante {
     private static void menuMeseros() {
         int opcion;
         do {
-            mostrarMenu("MESEROS", "Crear mesero", "Listar meseros", "Buscar mesero por id",
+            mostrarMenu("MESEROS", "Crear mesero", "Listar meseros", "Buscar mesero por id", "Buscar mesero por Usuario",
                     "Actualizar mesero", "Eliminar mesero");
             opcion = leerEntero(SELECCIONE);
             switch (opcion) {
                 case 1: ejecutar(PoliRestaurante::crearMesero); break;
                 case 2: ejecutar(PoliRestaurante::listarMeseros); break;
-                case 3: ejecutar(PoliRestaurante::buscarMesero); break;
-                case 4: ejecutar(PoliRestaurante::actualizarMesero); break;
-                case 5: ejecutar(PoliRestaurante::eliminarMesero); break;
+                case 3: ejecutar(PoliRestaurante::buscarMeseroPorId); break;
+                case 4: ejecutar(PoliRestaurante::buscarMeseroPorUsuario); break;
+                case 5: ejecutar(PoliRestaurante::actualizarMesero); break;
+                case 6: ejecutar(PoliRestaurante::eliminarMesero); break;
                 case 0: break;
                 default: System.out.println(INVALIDA);
             }
@@ -758,8 +760,13 @@ public class PoliRestaurante {
         }
     }
 
-    private static void buscarAdministrador() {
+    private static void buscarAdministradorPorId() {
         Administrador a = personal.buscarAdministradorPorId(leerEntero("Id del administrador: "));
+        System.out.println(a == null ? NO_ENCONTRADO : describir(a));
+    }
+    
+    private static void buscarAdministradorPorUsuario() {
+        Administrador a = personal.buscarAdministradorPorUsuario(leerTexto("Usuario a buscar: "));
         System.out.println(a == null ? NO_ENCONTRADO : describir(a));
     }
 
@@ -821,8 +828,13 @@ public class PoliRestaurante {
         }
     }
 
-    private static void buscarMesero() {
+    private static void buscarMeseroPorId() {
         Mesero m = personal.buscarMeseroPorId(leerEntero("Id del mesero: "));
+        System.out.println(m == null ? NO_ENCONTRADO : describir(m));
+    }
+    
+    private static void buscarMeseroPorUsuario() {
+        Mesero m = personal.buscarMeseroPorUsuario(leerTexto("Usuario a buscar: "));
         System.out.println(m == null ? NO_ENCONTRADO : describir(m));
     }
 
@@ -937,7 +949,7 @@ public class PoliRestaurante {
     }
 
     private static String describir(Mesero m) {
-        return "Mesero " + m.getApellido()
+       return "[" + m.getId() + "] " + m.getNombre() + " " + m.getApellido()
                 + " | Usuario: " + m.getUsuario()
                 + " | Documento: " + m.getNumeroDoc()
                 + " | Celular: " + m.getCelular()
