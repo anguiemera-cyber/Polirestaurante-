@@ -55,7 +55,11 @@ public class JuanManager {
     public Administrador buscarAdministradorPorId(int id) {
         return administradorDAO.buscarPorId(administradores, id);
     }
-
+    
+     public Administrador buscarAdministradorPorUsuario(String usuario) {
+        return administradorDAO.buscarPorUsuario(administradores, usuario);
+    }
+     
     public List<Administrador> listarAdministradores() {
         return administradorDAO.listar(administradores);
     }
@@ -76,6 +80,10 @@ public class JuanManager {
 
     public Mesero buscarMeseroPorId(int id) {
         return meseroDAO.buscarPorId(meseros, id);
+    }
+    
+    public Mesero buscarMeseroPorUsuario(String usuario) {
+        return meseroDAO.buscarPorUsuario(meseros, usuario);
     }
 
     public List<Mesero> listarMeseros() {
