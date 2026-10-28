@@ -51,6 +51,22 @@ public class MeseroDAO implements ICrudDAO<Mesero> {
         }
         return null;
     }
+    
+    public Mesero buscarPorUsuario(List<Mesero> lista, String usuario) {
+        if (lista == null || usuario == null) {
+            return null;
+        }
+
+        for (Mesero m : lista) {
+            if (m.getUsuario() != null
+                    && m.getUsuario().trim()
+                            .equalsIgnoreCase(usuario.trim())) {
+                return m;
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public List<Mesero> listar(List<Mesero> lista) {
