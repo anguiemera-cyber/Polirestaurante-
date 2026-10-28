@@ -51,6 +51,22 @@ public class AdministradorDAO implements ICrudDAO<Administrador> {
         }
         return null;
     }
+    
+    public Administrador buscarPorUsuario(List<Administrador> lista, String usuario) {
+        if (lista == null || usuario == null) {
+            return null;
+        }
+
+        for (Administrador a : lista) {
+            if (a.getUsuario() != null
+                    && a.getUsuario().trim()
+                            .equalsIgnoreCase(usuario.trim())) {
+                return a;
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public List<Administrador> listar(List<Administrador> lista) {
@@ -75,3 +91,4 @@ public class AdministradorDAO implements ICrudDAO<Administrador> {
     }
     
 }
+
