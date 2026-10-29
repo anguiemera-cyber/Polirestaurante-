@@ -31,7 +31,7 @@ public class DialogoMesa extends javax.swing.JFrame {
      *
      * @param original mesa a editar, o {@code null} para crear una nueva
      */
-    public FrameMesa(Mesa original) {
+    public DialogoMesa(Mesa original) {
         super(original == null ? TITULO_NUEVO : TITULO_EDITAR);
         this.original = original;
         initComponents();
