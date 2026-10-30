@@ -109,7 +109,7 @@ public class DialogoMesa extends javax.swing.JFrame {
 
         getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
 
-        panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 8, 8));
+        panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
