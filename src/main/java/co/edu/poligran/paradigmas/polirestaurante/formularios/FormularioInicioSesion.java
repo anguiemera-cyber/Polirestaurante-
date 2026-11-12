@@ -1,120 +1,265 @@
+
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
-/** Formulario visual de inicio de sesión de PoliRestaurante. */
-public class FormularioInicioSesion extends javax.swing.JFrame {
+import co.edu.poligran.paradigmas.polirestaurante.negocio.JuanManager;
+import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
 
-    public FormularioInicioSesion() {
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Administrador;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesero;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Cocinero;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class FormularioInicioSesion extends JFrame {
+
+    private final JuanManager personal;
+    private final ErikManager operaciones;
+
+    private JTextField txtUsuario;
+    private JPasswordField txtContraseña;
+
+    private JButton btnIngresar;
+    private JButton btnLimpiar;
+    private JButton btnMostrar;
+
+    private JLabel lblMensaje;
+
+    private boolean mostrarContraseña = false;
+
+    public FormularioInicioSesion(
+            JuanManager personal,
+            ErikManager operaciones) {
+
+        this.personal = personal;
+        this.operaciones = operaciones;
+
         initComponents();
-        setLocationRelativeTo(null);
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
-        panelTitulo = new javax.swing.JPanel();
-        lblTitulo = new javax.swing.JLabel();
-        lblSubtitulo = new javax.swing.JLabel();
-        panelFormulario = new javax.swing.JPanel();
-        lblUsuario = new javax.swing.JLabel();
-        txtUsuario = new javax.swing.JTextField();
-        lblContrasena = new javax.swing.JLabel();
-        txtContrasena = new javax.swing.JPasswordField();
-        lblRol = new javax.swing.JLabel();
-        cmbRol = new javax.swing.JComboBox<>();
-        panelBotones = new javax.swing.JPanel();
-        btnIngresar = new javax.swing.JButton();
-        btnLimpiar = new javax.swing.JButton();
-        lblEstado = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("PoliRestaurante - Inicio de sesión");
+        setSize(450, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
-        getContentPane().setBackground(new java.awt.Color(245, 247, 250));
-        getContentPane().setLayout(new java.awt.BorderLayout(12, 18));
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BorderLayout(15, 15));
+        panelPrincipal.setBackground(new Color(245, 247, 250));
+        panelPrincipal.setBorder(
+                BorderFactory.createEmptyBorder(25, 35, 25, 35)
+        );
 
-        panelTitulo.setBackground(new java.awt.Color(35, 55, 80));
-        panelTitulo.setBorder(javax.swing.BorderFactory.createEmptyBorder(18, 12, 18, 12));
-        panelTitulo.setLayout(new java.awt.GridLayout(2, 1, 0, 5));
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 25));
-        lblTitulo.setForeground(java.awt.Color.WHITE);
-        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitulo.setText("POLIRESTAURANTE");
+        // Título
+        JLabel lblTitulo = new JLabel(
+                "POLIRESTAURANTE",
+                SwingConstants.CENTER
+        );
+
+        lblTitulo.setFont(
+                new Font("Arial", Font.BOLD, 25)
+        );
+
+        lblTitulo.setForeground(new Color(35, 75, 120));
+
+        JLabel lblSubtitulo = new JLabel(
+                "Inicio de sesión",
+                SwingConstants.CENTER
+        );
+
+        lblSubtitulo.setFont(
+                new Font("Arial", Font.PLAIN, 16)
+        );
+
+        JPanel panelTitulo = new JPanel(new GridLayout(2, 1, 5, 5));
+        panelTitulo.setOpaque(false);
         panelTitulo.add(lblTitulo);
-        lblSubtitulo.setFont(new java.awt.Font("Segoe UI", 0, 14));
-        lblSubtitulo.setForeground(new java.awt.Color(220, 230, 240));
-        lblSubtitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblSubtitulo.setText("Sistema de gestión de pedidos");
         panelTitulo.add(lblSubtitulo);
-        getContentPane().add(panelTitulo, java.awt.BorderLayout.NORTH);
 
-        panelFormulario.setBackground(java.awt.Color.WHITE);
-        panelFormulario.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 18, 20, 18));
-        panelFormulario.setLayout(new java.awt.GridLayout(3, 2, 10, 16));
-        lblUsuario.setFont(new java.awt.Font("Segoe UI", 0, 14));
-        lblUsuario.setText("Usuario:");
-        panelFormulario.add(lblUsuario);
-        txtUsuario.setColumns(20);
-        panelFormulario.add(txtUsuario);
-        lblContrasena.setFont(new java.awt.Font("Segoe UI", 0, 14));
-        lblContrasena.setText("Contraseña:");
-        panelFormulario.add(lblContrasena);
-        txtContrasena.setColumns(20);
-        panelFormulario.add(txtContrasena);
-        lblRol.setFont(new java.awt.Font("Segoe UI", 0, 14));
-        lblRol.setText("Tipo de usuario:");
-        panelFormulario.add(lblRol);
-        cmbRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Administrador", "Mesero", "Cocinero" }));
-        panelFormulario.add(cmbRol);
-        getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
+        // Campos
+        JPanel panelCampos = new JPanel(new GridLayout(5, 1, 8, 8));
+        panelCampos.setOpaque(false);
 
+        JLabel lblUsuario = new JLabel("Usuario:");
+        lblUsuario.setFont(new Font("Arial", Font.BOLD, 14));
+
+        txtUsuario = new JTextField();
+        txtUsuario.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        JLabel lblContraseña = new JLabel("Contraseña:");
+        lblContraseña.setFont(new Font("Arial", Font.BOLD, 14));
+
+        txtContraseña = new JPasswordField();
+        txtContraseña.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtContraseña.setEchoChar('*');
+
+        btnMostrar = new JButton("Mostrar contraseña");
+        btnMostrar.addActionListener(e -> cambiarVisibilidad());
+
+        panelCampos.add(lblUsuario);
+        panelCampos.add(txtUsuario);
+        panelCampos.add(lblContraseña);
+        panelCampos.add(txtContraseña);
+        panelCampos.add(btnMostrar);
+
+        // Botones
+        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 10));
         panelBotones.setOpaque(false);
-        panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 12, 4));
-        btnIngresar.setBackground(new java.awt.Color(35, 100, 155));
-        btnIngresar.setForeground(java.awt.Color.WHITE);
-        btnIngresar.setText("Ingresar");
-        btnIngresar.addActionListener(evt -> btnIngresarActionPerformed(evt));
+
+        btnIngresar = new JButton("INGRESAR");
+        btnIngresar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnIngresar.setBackground(new Color(35, 75, 120));
+        btnIngresar.setForeground(Color.WHITE);
+        btnIngresar.setFocusPainted(false);
+
+        btnLimpiar = new JButton("LIMPIAR");
+        btnLimpiar.setFont(new Font("Arial", Font.BOLD, 14));
+
+        btnIngresar.addActionListener(e -> iniciarSesion());
+        btnLimpiar.addActionListener(e -> limpiarCampos());
+
         panelBotones.add(btnIngresar);
-        btnLimpiar.setText("Limpiar");
-        btnLimpiar.addActionListener(evt -> btnLimpiarActionPerformed(evt));
         panelBotones.add(btnLimpiar);
-        lblEstado.setFont(new java.awt.Font("Segoe UI", 0, 11));
-        lblEstado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblEstado.setText("Ingrese sus datos para acceder");
-        panelBotones.add(lblEstado);
-        getContentPane().add(panelBotones, java.awt.BorderLayout.SOUTH);
-        pack();
-    }// </editor-fold>
 
-    private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {
-        lblEstado.setText("Formulario visual: inicio de sesión aún no conectado.");
+        // Mensaje
+        lblMensaje = new JLabel(
+                "Ingrese sus datos para continuar",
+                SwingConstants.CENTER
+        );
+
+        lblMensaje.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
+        panelInferior.setOpaque(false);
+        panelInferior.add(panelBotones, BorderLayout.CENTER);
+        panelInferior.add(lblMensaje, BorderLayout.SOUTH);
+
+        panelPrincipal.add(panelTitulo, BorderLayout.NORTH);
+        panelPrincipal.add(panelCampos, BorderLayout.CENTER);
+        panelPrincipal.add(panelInferior, BorderLayout.SOUTH);
+
+        add(panelPrincipal);
+
+        txtContraseña.addActionListener(e -> iniciarSesion());
     }
 
-    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {
+    // Mostrar u ocultar contraseña
+    private void cambiarVisibilidad() {
+
+        mostrarContraseña = !mostrarContraseña;
+
+        if (mostrarContraseña) {
+            txtContraseña.setEchoChar((char) 0);
+            btnMostrar.setText("Ocultar contraseña");
+        } else {
+            txtContraseña.setEchoChar('*');
+            btnMostrar.setText("Mostrar contraseña");
+        }
+    }
+
+    // Validar inicio de sesión
+    private void iniciarSesion() {
+
+        String usuario = txtUsuario.getText().trim();
+
+        String contraseña = new String(
+                txtContraseña.getPassword()
+        );
+
+        if (usuario.isEmpty() || contraseña.isEmpty()) {
+
+            lblMensaje.setText("Complete todos los campos.");
+            lblMensaje.setForeground(Color.RED);
+            return;
+        }
+
+        // Administrador
+        Administrador administrador =
+                personal.buscarAdministradorPorUsuario(usuario);
+
+        if (administrador != null
+                && administrador.getContraseña() != null
+                && administrador.getContraseña().equals(contraseña)) {
+
+            mostrarBienvenida("Administrador",
+                    administrador.getNombre());
+            return;
+        }
+
+        // Mesero
+        Mesero mesero =
+                personal.buscarMeseroPorUsuario(usuario);
+
+        if (mesero != null
+                && mesero.getContraseña() != null
+                && mesero.getContraseña().equals(contraseña)) {
+
+            mostrarBienvenida("Mesero", mesero.getNombre());
+            return;
+        }
+
+        // Cocinero
+        Cocinero cocinero =
+                operaciones.buscarCocineroPorUsuario(usuario);
+
+        if (cocinero != null
+                && cocinero.getContraseña() != null
+                && cocinero.getContraseña().equals(contraseña)) {
+
+            mostrarBienvenida("Cocinero",
+                    cocinero.getCocinero().getNombre());
+            return;
+        }
+
+        lblMensaje.setText("Usuario o contraseña incorrectos.");
+        lblMensaje.setForeground(Color.RED);
+
+        txtContraseña.setText("");
+    }
+
+    // Mostrar bienvenida
+    private void mostrarBienvenida(String rol, String nombre) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Bienvenido " + nombre
+                + "\nRol: " + rol,
+                "Inicio de sesión exitoso",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        limpiarCampos();
+    }
+
+    // Limpiar campos
+    private void limpiarCampos() {
+
         txtUsuario.setText("");
-        txtContrasena.setText("");
-        cmbRol.setSelectedIndex(0);
-        lblEstado.setText("Campos limpiados.");
+        txtContraseña.setText("");
+
+        lblMensaje.setText("Ingrese sus datos para continuar");
+        lblMensaje.setForeground(Color.DARK_GRAY);
+
+        txtUsuario.requestFocus();
     }
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(() -> new FormularioInicioSesion().setVisible(true));
-    }
+    // Método principal
+    public static void main(String[] args) {
 
-    // Variables declaration - do not modify
-    private javax.swing.JButton btnIngresar;
-    private javax.swing.JButton btnLimpiar;
-    private javax.swing.JComboBox<String> cmbRol;
-    private javax.swing.JLabel lblContrasena;
-    private javax.swing.JLabel lblEstado;
-    private javax.swing.JLabel lblRol;
-    private javax.swing.JLabel lblSubtitulo;
-    private javax.swing.JLabel lblTitulo;
-    private javax.swing.JLabel lblUsuario;
-    private javax.swing.JPanel panelBotones;
-    private javax.swing.JPanel panelFormulario;
-    private javax.swing.JPanel panelTitulo;
-    private javax.swing.JPasswordField txtContrasena;
-    private javax.swing.JTextField txtUsuario;
-    // End of variables declaration
+        SwingUtilities.invokeLater(() -> {
+
+            JuanManager personal = new JuanManager();
+            ErikManager operaciones = new ErikManager();
+
+            FormularioInicioSesion ventana =
+                    new FormularioInicioSesion(
+                            personal,
+                            operaciones
+                    );
+
+            ventana.setVisible(true);
+        });
+    }
 }
