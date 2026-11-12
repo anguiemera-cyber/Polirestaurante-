@@ -16,6 +16,11 @@ import java.util.List;
  *
  */
 public class JuanManager {
+    
+    private static final JuanManager INSTANCIA = new JuanManager();
+    public static JuanManager getInstancia() {
+    return INSTANCIA;
+}
 
     // Listas en memoria de cada entidad.
     private final List<Administrador> administradores;
