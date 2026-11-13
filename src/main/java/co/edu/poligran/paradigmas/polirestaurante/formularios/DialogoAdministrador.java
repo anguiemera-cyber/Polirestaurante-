@@ -5,6 +5,11 @@
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
+import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.negocio.JuanManager;
+import co.edu.poligran.paradigmas.polirestaurante.vista.AdministradorVista;
+import java.awt.*;
+import javax.swing.*;
 
 /**
  *
@@ -17,12 +22,95 @@ public class DialogoAdministrador extends javax.swing.JFrame {
     /**
      * Creates new form DialogoAdministrador
      */
+    private AdministradorVista vista;
+
     public DialogoAdministrador() {
-        initComponents();
+        this(new AngieManager(), null, new JuanManager());
     }
 
-    DialogoAdministrador(ErikManager operaciones) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    /** Constructor de compatibilidad; usa el catálogo compartido del ErikManager. */
+    public DialogoAdministrador(ErikManager operaciones) {
+        this(operaciones.getAngieManager(), operaciones, new JuanManager());
+    }
+
+    public DialogoAdministrador(AngieManager catalogo, ErikManager operaciones, JuanManager personal) {
+        initComponents();
+        if (operaciones == null) operaciones = new ErikManager(catalogo);
+        vista = new AdministradorVista(catalogo, operaciones, personal);
+        construirPanel();
+    }
+
+    // Panel sencillo usando componentes básicos de Swing.
+    private void construirPanel() {
+        setTitle("PoliRestaurante - Administrador");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new java.awt.BorderLayout(10, 10));
+        panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        JLabel titulo = new JLabel("MENU ADMINISTRADOR");
+        titulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+        panel.add(titulo, java.awt.BorderLayout.NORTH);
+
+        JPanel botones = new JPanel(new java.awt.GridLayout(4, 2, 10, 10));
+
+        JButton btnPersonal = new JButton("Personal");
+        JButton btnPedidos = new JButton("Pedidos");
+        JButton btnProductos = new JButton("Productos");
+        JButton btnMesas = new JButton("Mesas");
+        JButton btnCategorias = new JButton("Categorias");
+        JButton btnIngredientes = new JButton("Ingredientes");
+        JButton btnDetalles = new JButton("Detalles de pedido");
+
+        botones.add(btnPersonal);
+        botones.add(btnPedidos);
+        botones.add(btnProductos);
+        botones.add(btnMesas);
+        botones.add(btnCategorias);
+        botones.add(btnIngredientes);
+        botones.add(btnDetalles);
+
+        btnPersonal.addActionListener(e -> {
+            String[] opciones = {"Administradores", "Meseros", "Cocineros"};
+            String opcion = (String) JOptionPane.showInputDialog(
+                    this, "Seleccione una opcion:", "Personal",
+                    JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if (opcion != null) {
+                abrir(opcion);
+            }
+        });
+        btnPedidos.addActionListener(e -> abrir("Pedidos"));
+        btnProductos.addActionListener(e -> abrir("Productos"));
+        btnMesas.addActionListener(e -> abrir("Mesas"));
+        btnCategorias.addActionListener(e -> abrir("Categorías"));
+        btnIngredientes.addActionListener(e -> abrir("Ingredientes"));
+        btnDetalles.addActionListener(e -> abrir("Detalles de pedido"));
+
+        panel.add(botones, java.awt.BorderLayout.CENTER);
+
+        JButton btnSalir = new JButton("Salir");
+        btnSalir.addActionListener(e -> dispose());
+        JPanel abajo = new JPanel();
+        abajo.add(btnSalir);
+        panel.add(abajo, java.awt.BorderLayout.SOUTH);
+
+        setContentPane(panel);
+        setSize(520, 390);
+        setLocationRelativeTo(null);
+    }
+
+    private void abrir(String modulo) {
+        try {
+            JFrame ventana = vista.abrirModulo(modulo);
+            ventana.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            ventana.setLocationRelativeTo(this);
+            ventana.setVisible(true);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "No se pudo abrir " + modulo, JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**

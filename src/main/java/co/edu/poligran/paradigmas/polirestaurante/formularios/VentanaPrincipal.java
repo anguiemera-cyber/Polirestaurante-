@@ -63,7 +63,7 @@ public class VentanaPrincipal extends JFrame {
                 boton("Clientes", () -> new FormularioCliente(personal))));
         
         centro.add(grupo("Gestion",
-                boton("Administrador", () -> new DialogoAdministrador(operaciones)),
+                boton("Administrador", () -> new DialogoAdministrador(catalogo, operaciones, personal)),
                 boton("Cocinero", () -> new DialogoCocinero(operaciones)),
                 boton("Mesero", () -> new DialogoMesero(operaciones))));
 

@@ -5,6 +5,10 @@
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
+import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.vista.MeseroVista;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *
@@ -17,12 +21,66 @@ public class DialogoMesero extends javax.swing.JFrame {
     /**
      * Creates new form DialogoMesero
      */
+    private MeseroVista vista;
+
     public DialogoMesero() {
-        initComponents();
+        this(new AngieManager(), null);
     }
 
-    DialogoMesero(ErikManager operaciones) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public DialogoMesero(ErikManager operaciones) {
+        this(operaciones.getAngieManager(), operaciones);
+    }
+
+    public DialogoMesero(AngieManager catalogo, ErikManager operaciones) {
+        initComponents();
+        if (operaciones == null) {
+            operaciones = new ErikManager(catalogo);
+        }
+        vista = new MeseroVista(catalogo, operaciones);
+        construirPanel();
+    }
+
+    private void construirPanel() {
+        setTitle("PoliRestaurante - Mesero");
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titulo = new JLabel("MENU MESERO", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        panel.add(titulo, BorderLayout.NORTH);
+
+        JPanel botones = new JPanel(new GridLayout(1, 2, 15, 15));
+        JButton btnMesas = new JButton("Mesas");
+        JButton btnPedidos = new JButton("Pedidos");
+        botones.add(btnMesas);
+        botones.add(btnPedidos);
+        btnMesas.addActionListener(e -> abrir("Mesas"));
+        btnPedidos.addActionListener(e -> abrir("Pedidos"));
+        panel.add(botones, BorderLayout.CENTER);
+
+        JButton btnSalir = new JButton("Salir");
+        btnSalir.addActionListener(e -> dispose());
+        JPanel abajo = new JPanel();
+        abajo.add(btnSalir);
+        panel.add(abajo, BorderLayout.SOUTH);
+
+        setContentPane(panel);
+        setSize(420, 240);
+        setLocationRelativeTo(null);
+    }
+
+    private void abrir(String modulo) {
+        try {
+            JFrame ventana = vista.abrirModulo(modulo);
+            ventana.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            ventana.setLocationRelativeTo(this);
+            ventana.setVisible(true);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
