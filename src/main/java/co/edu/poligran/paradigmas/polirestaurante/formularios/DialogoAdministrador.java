@@ -1,168 +1,177 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
-import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.JuanManager;
 import co.edu.poligran.paradigmas.polirestaurante.vista.AdministradorVista;
-import java.awt.*;
-import javax.swing.*;
 
-/**
- *
- * @author USUARIO
- */
 public class DialogoAdministrador extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogoAdministrador.class.getName());
-
-    /**
-     * Creates new form DialogoAdministrador
-     */
     private AdministradorVista vista;
-
-    public DialogoAdministrador() {
-        this(new AngieManager(), null, new JuanManager());
-    }
-
-    /** Constructor de compatibilidad; usa el catálogo compartido del ErikManager. */
-    public DialogoAdministrador(ErikManager operaciones) {
-        this(operaciones.getAngieManager(), operaciones, new JuanManager());
-    }
-
+    public DialogoAdministrador() { this(new AngieManager(), null, new JuanManager()); }
+    public DialogoAdministrador(ErikManager operaciones) { this(operaciones.getAngieManager(), operaciones, new JuanManager()); }
     public DialogoAdministrador(AngieManager catalogo, ErikManager operaciones, JuanManager personal) {
         initComponents();
         if (operaciones == null) operaciones = new ErikManager(catalogo);
         vista = new AdministradorVista(catalogo, operaciones, personal);
-        construirPanel();
-    }
-
-    // Panel sencillo usando componentes básicos de Swing.
-    private void construirPanel() {
-        setTitle("PoliRestaurante - Administrador");
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new java.awt.BorderLayout(10, 10));
-        panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-        JLabel titulo = new JLabel("MENU ADMINISTRADOR");
-        titulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
-        panel.add(titulo, java.awt.BorderLayout.NORTH);
-
-        JPanel botones = new JPanel(new java.awt.GridLayout(4, 2, 10, 10));
-
-        JButton btnPersonal = new JButton("Personal");
-        JButton btnPedidos = new JButton("Pedidos");
-        JButton btnProductos = new JButton("Productos");
-        JButton btnMesas = new JButton("Mesas");
-        JButton btnCategorias = new JButton("Categorias");
-        JButton btnIngredientes = new JButton("Ingredientes");
-        JButton btnDetalles = new JButton("Detalles de pedido");
-
-        botones.add(btnPersonal);
-        botones.add(btnPedidos);
-        botones.add(btnProductos);
-        botones.add(btnMesas);
-        botones.add(btnCategorias);
-        botones.add(btnIngredientes);
-        botones.add(btnDetalles);
-
-        btnPersonal.addActionListener(e -> {
-            String[] opciones = {"Administradores", "Meseros", "Cocineros"};
-            String opcion = (String) JOptionPane.showInputDialog(
-                    this, "Seleccione una opcion:", "Personal",
-                    JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-            if (opcion != null) {
-                abrir(opcion);
-            }
-        });
-        btnPedidos.addActionListener(e -> abrir("Pedidos"));
-        btnProductos.addActionListener(e -> abrir("Productos"));
-        btnMesas.addActionListener(e -> abrir("Mesas"));
-        btnCategorias.addActionListener(e -> abrir("Categorías"));
-        btnIngredientes.addActionListener(e -> abrir("Ingredientes"));
-        btnDetalles.addActionListener(e -> abrir("Detalles de pedido"));
-
-        panel.add(botones, java.awt.BorderLayout.CENTER);
-
-        JButton btnSalir = new JButton("Salir");
-        btnSalir.addActionListener(e -> dispose());
-        JPanel abajo = new JPanel();
-        abajo.add(btnSalir);
-        panel.add(abajo, java.awt.BorderLayout.SOUTH);
-
-        setContentPane(panel);
-        setSize(520, 390);
         setLocationRelativeTo(null);
     }
 
     private void abrir(String modulo) {
         try {
-            JFrame ventana = vista.abrirModulo(modulo);
-            ventana.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            javax.swing.JFrame ventana = vista.abrirModulo(modulo);
+            ventana.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
             ventana.setLocationRelativeTo(this);
             ventana.setVisible(true);
         } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(),
-                    "No se pudo abrir " + modulo, JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        panelBotones = new javax.swing.JPanel();
+        lblTitulo = new javax.swing.JLabel();
+        btnPersonal = new javax.swing.JButton();
+        btnPedidos = new javax.swing.JButton();
+        btnProductos = new javax.swing.JButton();
+        btnMesas = new javax.swing.JButton();
+        btnCategorias = new javax.swing.JButton();
+        btnIngredientes = new javax.swing.JButton();
+        btnDetalles = new javax.swing.JButton();
+        btnSalir = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("PoliRestaurante - Administrador");
+        getContentPane().setLayout(new java.awt.BorderLayout(10, 10));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        lblTitulo.setFont(new java.awt.Font("Arial", 1, 20));
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setText("MENU ADMINISTRADOR");
+        getContentPane().add(lblTitulo, java.awt.BorderLayout.NORTH);
 
-        pack();
+        panelBotones.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        panelBotones.setLayout(new java.awt.GridLayout(4, 2, 10, 10));
+
+        btnPersonal.setText("Personal");
+        btnPersonal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPersonalActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnPersonal);
+
+        btnPedidos.setText("Pedidos");
+        btnPedidos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPedidosActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnPedidos);
+
+        btnProductos.setText("Productos");
+        btnProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductosActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnProductos);
+
+        btnMesas.setText("Mesas");
+        btnMesas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMesasActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnMesas);
+
+        btnCategorias.setText("Categorías");
+        btnCategorias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoriasActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnCategorias);
+
+        btnIngredientes.setText("Ingredientes");
+        btnIngredientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIngredientesActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnIngredientes);
+
+        btnDetalles.setText("Detalles de pedido");
+        btnDetalles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetallesActionPerformed(evt);
+            }
+        });
+        panelBotones.add(btnDetalles);
+
+        getContentPane().add(panelBotones, java.awt.BorderLayout.CENTER);
+
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnSalir, java.awt.BorderLayout.SOUTH);
+
+        setSize(new java.awt.Dimension(540, 400));
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnPersonalActionPerformed(java.awt.event.ActionEvent evt) {
+        String[] opciones = {"Administradores", "Meseros", "Cocineros"};
+        String opcion = (String) javax.swing.JOptionPane.showInputDialog(this,
+                "Seleccione una opcion", "Personal", javax.swing.JOptionPane.QUESTION_MESSAGE,
+                null, opciones, opciones[0]);
+        if (opcion != null) abrir(opcion);
+    }
 
-        /* Create and display the form */
+    private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Pedidos");
+    }
+
+    private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Productos");
+    }
+
+    private void btnMesasActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Mesas");
+    }
+
+    private void btnCategoriasActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Categorías");
+    }
+
+    private void btnIngredientesActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Ingredientes");
+    }
+
+    private void btnDetallesActionPerformed(java.awt.event.ActionEvent evt) {
+        abrir("Detalles de pedido");
+    }
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {
+        dispose();
+    }
+
+    public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> new DialogoAdministrador().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnPersonal;
+    private javax.swing.JButton btnPedidos;
+    private javax.swing.JButton btnProductos;
+    private javax.swing.JButton btnMesas;
+    private javax.swing.JButton btnCategorias;
+    private javax.swing.JButton btnIngredientes;
+    private javax.swing.JButton btnDetalles;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel panelBotones;
     // End of variables declaration//GEN-END:variables
 }
