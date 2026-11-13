@@ -53,12 +53,20 @@ public class VentanaPrincipal extends JFrame {
                 boton("Detalles de pedido", () -> new FormularioDetallePedido(catalogo, operaciones))));
 
         centro.add(grupo("Operaciones",
-                boton("Cocineros", () -> new FormularioCocinero(operaciones))));
+                boton("Bebidas", () -> new DialogoBebidas(operaciones)),
+                boton("Producto", () -> new DialogoProducto(operaciones)),
+                boton("Pedido", () -> new DialogoPedido(operaciones))));
 
         centro.add(grupo("Personal",
                 boton("Administradores", () -> new FormularioAdministrador(personal)),
                 boton("Meseros", () -> new FormularioMesero(personal)),
+                boton("Cocineros", () -> new FormularioCocinero(operaciones)),
                 boton("Clientes", () -> new FormularioCliente(personal))));
+        
+        centro.add(grupo("Gestion",
+                boton("Administrador", () -> new DialogoAdministrador(operaciones)),
+                boton("Cocinero", () -> new DialogoCocinero(operaciones)),
+                boton("Mesero", () -> new DialogoMesero(operaciones))));
 
         JButton salir = new JButton("Salir");
         salir.addActionListener(e -> dispose());

@@ -4,6 +4,8 @@
  */
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
+import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
+
 /**
  *
  * @author dayan
@@ -17,6 +19,10 @@ public class DialogoPedido extends javax.swing.JFrame {
      */
     public DialogoPedido() {
         initComponents();
+    }
+
+    DialogoPedido(ErikManager operaciones) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     /**
