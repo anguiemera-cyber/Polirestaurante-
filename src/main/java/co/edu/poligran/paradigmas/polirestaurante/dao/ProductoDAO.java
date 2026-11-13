@@ -2,34 +2,29 @@
 package co.edu.poligran.paradigmas.polirestaurante.dao;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Producto;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Objeto de Acceso a Datos (DAO) para la entidad Producto.
- *
- * Implementa las operaciones CRUD sobre listas en memoria.
- * También permite buscar productos por su nombre.
- *
- * @version 1.0
- * @see ICrudDAO
- * @see Producto
- */
 public class ProductoDAO implements ICrudDAO<Producto> {
-
-    // Registra un producto nuevo en la lista.
-    // Si el producto no tiene un ID válido, le asigna uno automáticamente.
-    // Si el ID ya existe, genera una excepción para evitar duplicados.
 
     @Override
     public Producto crear(List<Producto> lista, Producto producto) {
+
         validar(lista, producto);
 
-        if (producto.getid() <= 0) {
-            producto.setid(siguienteId(lista));
-        } else if (buscarPorId(lista, producto.getid()) != null) {
+        if (buscarPorNombre(lista, producto.getNombre()) != null) {
             throw new IllegalArgumentException(
-                "Ya existe un producto con id " + producto.getid()
+                    "Ya existe un producto con ese nombre."
+            );
+        }
+
+        if (producto.getId() <= 0) {
+            producto.setId(siguienteId(lista));
+        } else if (buscarPorId(lista, producto.getId()) != null) {
+            throw new IllegalArgumentException(
+                    "Ya existe un producto con ese ID."
             );
         }
 
@@ -37,16 +32,29 @@ public class ProductoDAO implements ICrudDAO<Producto> {
         return producto;
     }
 
-    // Busca un producto mediante su ID.
-    // Si lo encuentra, reemplaza el objeto por los datos actualizados.
-    // Si no existe, devuelve null.
-
     @Override
     public Producto actualizar(List<Producto> lista, Producto producto) {
+
         validar(lista, producto);
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getid() == producto.getid()) {
+
+            Producto actual = lista.get(i);
+
+            if (actual != null
+                    && actual.getId() == producto.getId()) {
+
+                Producto repetido =
+                        buscarPorNombre(lista, producto.getNombre());
+
+                if (repetido != null
+                        && repetido.getId() != producto.getId()) {
+
+                    throw new IllegalArgumentException(
+                            "Otro producto ya utiliza ese nombre."
+                    );
+                }
+
                 lista.set(i, producto);
                 return producto;
             }
@@ -55,107 +63,154 @@ public class ProductoDAO implements ICrudDAO<Producto> {
         return null;
     }
 
-   
-    // Elimina el producto que tenga el ID indicado.
-    // Devuelve true si lo elimina y false si no existe o la lista es null.
-
     @Override
     public boolean eliminar(List<Producto> lista, int id) {
+
         if (lista == null) {
             return false;
         }
 
         return lista.removeIf(
-            producto -> producto != null && producto.getid() == id
+                p -> p != null && p.getId() == id
         );
     }
 
-    
-    // Recorre la lista hasta encontrar el producto con el ID solicitado.
-    // Si no encuentra coincidencias, devuelve null.
-
     @Override
     public Producto buscarPorId(List<Producto> lista, int id) {
+
         if (lista == null) {
             return null;
         }
 
-        for (Producto producto : lista) {
-            if (producto != null && producto.getid() == id) {
-                return producto;
+        for (Producto p : lista) {
+
+            if (p != null && p.getId() == id) {
+                return p;
             }
         }
 
         return null;
     }
 
-    
-    // Devuelve todos los productos registrados.
-    // La lista retornada no permite agregar ni eliminar elementos
-    // directamente desde el objeto que la recibe.
-
     @Override
     public List<Producto> listar(List<Producto> lista) {
+
         if (lista == null) {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableList(lista);
+        return Collections.unmodifiableList(
+                new ArrayList<>(lista)
+        );
     }
 
-   
-    // Compara los nombres ignorando mayúsculas y minúsculas.
-    // También ignora los espacios al inicio y al final del texto.
-    // Devuelve el primer producto que coincida o null si no existe.
+    public Producto buscarPorNombre(
+            List<Producto> lista, String nombre) {
 
-    public Producto buscarPorNombre(List<Producto> lista, String nombre) {
-        if (lista == null || nombre == null) {
+        if (lista == null || nombre == null
+                || nombre.trim().isEmpty()) {
             return null;
         }
 
-        for (Producto producto : lista) {
-            if (producto != null
-                    && producto.getnombre() != null
-                    && producto.getnombre().trim()
-                        .equalsIgnoreCase(nombre.trim())) {
-                return producto;
+        for (Producto p : lista) {
+
+            if (p != null && p.getNombre() != null
+                    && p.getNombre().trim()
+                    .equalsIgnoreCase(nombre.trim())) {
+
+                return p;
             }
         }
 
         return null;
     }
 
-    
-    // Busca el identificador más alto de la lista y le suma uno.
-    // Esto permite asignar IDs consecutivos a los productos nuevos.
+    public List<Producto> buscarPorTipo(
+            List<Producto> lista, String tipo) {
 
-    private int siguienteId(List<Producto> lista) {
-        int max = 0;
+        List<Producto> resultado = new ArrayList<>();
 
-        for (Producto producto : lista) {
-            if (producto != null) {
-                max = Math.max(max, producto.getid());
+        if (lista == null || tipo == null) {
+            return resultado;
+        }
+
+        for (Producto p : lista) {
+
+            if (p != null && p.getTipo() != null
+                    && p.getTipo().equalsIgnoreCase(tipo.trim())) {
+
+                resultado.add(p);
             }
         }
 
-        return max + 1;
+        return resultado;
     }
 
-    
-    // Comprueba que la lista y el producto existan antes de ejecutar
-    // operaciones que dependen de ambos parámetros.
-    // Si alguno es null, informa el error mediante una excepción.
+    public List<Producto> listarBebidas(List<Producto> lista) {
+        return buscarPorTipo(lista, "Bebida");
+    }
+
+    public List<Producto> listarDisponibles(List<Producto> lista) {
+
+        List<Producto> resultado = new ArrayList<>();
+
+        if (lista == null) {
+            return resultado;
+        }
+
+        for (Producto p : lista) {
+
+            if (p != null && p.isDisponible()) {
+                resultado.add(p);
+            }
+        }
+
+        return resultado;
+    }
+
+    private int siguienteId(List<Producto> lista) {
+
+        int maximo = 0;
+
+        for (Producto p : lista) {
+
+            if (p != null) {
+                maximo = Math.max(maximo, p.getId());
+            }
+        }
+
+        return maximo + 1;
+    }
 
     private void validar(List<Producto> lista, Producto producto) {
-        if (lista == null) {
+
+        if (lista == null || producto == null) {
             throw new IllegalArgumentException(
-                "La lista de productos no puede ser nula"
+                    "La lista y el producto son obligatorios."
             );
         }
 
-        if (producto == null) {
+        if (producto.getNombre() == null
+                || producto.getNombre().trim().isEmpty()) {
+
             throw new IllegalArgumentException(
-                "El producto no puede ser nulo"
+                    "El nombre del producto es obligatorio."
+            );
+        }
+
+        if (producto.getTipo() == null
+                || producto.getTipo().trim().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "El tipo del producto es obligatorio."
+            );
+        }
+
+        if (!Double.isFinite(producto.getPrecio())
+                || producto.getPrecio() < 0) {
+
+            throw new IllegalArgumentException(
+                    "El precio debe ser un número válido mayor o igual a cero."
             );
         }
     }

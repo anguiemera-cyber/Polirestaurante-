@@ -1,17 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package co.edu.poligran.paradigmas.polirestaurante.modelo;
 
-/**
- *
- * @author salaG201
- */
 public class Pedido {
+
     private int id;
     private int cantidad;
-    Producto productopedido;
+    private Producto productopedido;
     private long costo;
     private String mesa;
     private String detalles;
@@ -21,9 +15,10 @@ public class Pedido {
         this.id = id;
         this.estado = EstadoPedido.PENDIENTE;
     }
-
+    
     public Pedido(Producto productopedido, int cantidad,
                   long costo, String mesa, String detalles) {
+
         this.productopedido = productopedido;
         this.cantidad = cantidad;
         this.costo = costo;
@@ -32,51 +27,67 @@ public class Pedido {
         this.estado = EstadoPedido.PENDIENTE;
     }
 
-    public int getid() {
+    public Pedido(int id, Producto productopedido,
+                  int cantidad, long costo,
+                  String mesa, String detalles,
+                  EstadoPedido estado) {
+
+        this.id = id;
+        this.productopedido = productopedido;
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.mesa = mesa;
+        this.detalles = detalles;
+
+        this.estado = estado == null
+                ? EstadoPedido.PENDIENTE : estado;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setid(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getcantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setcantidad(int cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
-    public Producto getproductopedido() {
+    public Producto getProductoPedido() {
         return productopedido;
     }
 
-    public void setproductopedido(Producto productopedido) {
-        this.productopedido = productopedido;
+    public void setProductoPedido(Producto producto) {
+        this.productopedido = producto;
     }
 
-    public long getcosto() {
+    public long getCosto() {
         return costo;
     }
 
-    public void setcosto(long costo) {
+    public void setCosto(long costo) {
         this.costo = costo;
     }
 
-    public String getmesa() {
+    public String getMesa() {
         return mesa;
     }
 
-    public void setmesa(String mesa) {
+    public void setMesa(String mesa) {
         this.mesa = mesa;
     }
 
-    public String getdetalles() {
+    public String getDetalles() {
         return detalles;
     }
 
-    public void setdetalles(String detalles) {
+    public void setDetalles(String detalles) {
         this.detalles = detalles;
     }
 
@@ -85,13 +96,68 @@ public class Pedido {
     }
 
     public void setEstado(EstadoPedido estado) {
+        if (estado == null) {
+            throw new IllegalArgumentException(
+                    "El estado no puede ser nulo."
+            );
+        }
+
         this.estado = estado;
+    }
+
+    public int getid() {
+        return getId();
+    }
+
+    public void setid(int id) {
+        setId(id);
+    }
+
+    public int getcantidad() {
+        return getCantidad();
+    }
+
+    public void setcantidad(int cantidad) {
+        setCantidad(cantidad);
+    }
+
+    public Producto getproductopedido() {
+        return getProductoPedido();
+    }
+
+    public void setproductopedido(Producto producto) {
+        setProductoPedido(producto);
+    }
+
+    public long getcosto() {
+        return getCosto();
+    }
+
+    public void setcosto(long costo) {
+        setCosto(costo);
+    }
+
+    public String getmesa() {
+        return getMesa();
+    }
+
+    public void setmesa(String mesa) {
+        setMesa(mesa);
+    }
+
+    public String getdetalles() {
+        return getDetalles();
+    }
+
+    public void setdetalles(String detalles) {
+        setDetalles(detalles);
     }
 
     @Override
     public String toString() {
         return "[" + id + "] "
-                + cantidad + " " + productopedido
+                + cantidad + " "
+                + productopedido
                 + " - Mesa: " + mesa
                 + " - Costo: " + costo
                 + " - Detalles: " + detalles

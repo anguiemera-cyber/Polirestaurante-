@@ -205,7 +205,7 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         if (cantidad == null) {
             return;
         }
-        DetallePedido datos = new DetallePedido(id, actual.getIdPedido(), precio, cantidad);
+        DetallePedido datos = new DetallePedido(id, actual.getIdPedido(), actual.getIdProducto(), precio, cantidad);
         if (angie.actualizarDetalle(datos)) {
             mostrar(datos);
             actualizarTabla();

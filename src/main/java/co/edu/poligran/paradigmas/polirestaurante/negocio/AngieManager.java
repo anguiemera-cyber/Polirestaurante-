@@ -289,101 +289,69 @@ public class AngieManager {
     // Detalles de pedido
     // =====================================================================
 
-    /**
-     * Registra un detalle de pedido.
-     *
-     * @param detalle detalle que se desea registrar; debe traer el
-     *                {@code idPedido} al que pertenece
-     * @return el detalle registrado, con su id asignado
-     * @throws IllegalArgumentException si el detalle es {@code null}, no tiene
-     *                                  {@code idPedido} válido o su id ya existe
-     */
     public DetallePedido crearDetalle(DetallePedido detalle) {
         return detallePedidoDAO.crear(detalles, detalle);
     }
 
-    /**
-     * Obtiene todos los detalles de pedido registrados.
-     *
-     * @return vista no modificable de la lista global de detalles
-     */
     public List<DetallePedido> listarDetalles() {
         return detallePedidoDAO.listar(detalles);
     }
 
-    /**
-     * Busca un detalle de pedido por su identificador.
-     *
-     * @param id identificador del detalle
-     * @return el detalle encontrado, o {@code null} si no existe
-     */
     public DetallePedido buscarDetallePorId(int id) {
         return detallePedidoDAO.buscarPorId(detalles, id);
     }
 
-    /**
-     * Busca todos los detalles que pertenecen a un pedido.
-     *
-     * @param idPedido identificador del pedido
-     * @return lista (posiblemente vacía) con los detalles del pedido
-     * @see DetallePedidoDAO#buscarPorPedido(List, int)
-     */
     public List<DetallePedido> buscarDetallesPorPedido(int idPedido) {
         return detallePedidoDAO.buscarPorPedido(detalles, idPedido);
     }
 
-    /**
-     * Calcula el total de un pedido sumando los subtotales de sus detalles.
-     *
-     * @param idPedido identificador del pedido
-     * @return el total del pedido; 0 si no tiene detalles
-     * @see DetallePedidoDAO#calcularTotalPedido(List, int)
-     */
-    public double calcularTotalPedido(int idPedido) {
-        return detallePedidoDAO.calcularTotalPedido(detalles, idPedido);
+    public List<DetallePedido> buscarDetallesPorProducto(int idProducto) {
+        return detallePedidoDAO.buscarPorProducto(detalles, idProducto);
     }
 
-    /**
-     * Actualiza el precio unitario y la cantidad de un detalle.
-     * <p>
-     * Se conserva el {@code idPedido} original, porque un detalle no puede
-     * cambiar de pedido.
-     * </p>
-     *
-     * @param datos detalle con el id a actualizar y los nuevos datos
-     * @return {@code true} si se actualizó; {@code false} si no existe un
-     *         detalle con ese id
-     */
+    public double calcularTotalPedido(int idPedido) {
+        return detallePedidoDAO.calcularTotalPedido(
+                detalles, idPedido
+        );
+    }
+
+    public double calcularTotalDetalles() {
+        return detallePedidoDAO.calcularTotal(detalles);
+    }
+
     public boolean actualizarDetalle(DetallePedido datos) {
-        DetallePedido actual = detallePedidoDAO.buscarPorId(detalles, datos.getIdDetalle());
+
+        if (datos == null) {
+            throw new IllegalArgumentException(
+                    "El detalle no puede ser nulo."
+            );
+        }
+
+        DetallePedido actual =
+                detallePedidoDAO.buscarPorId(
+                        detalles, datos.getIdDetalle()
+                );
+
         if (actual == null) {
             return false;
         }
+
+        // El detalle conserva el pedido original.
         datos.setIdPedido(actual.getIdPedido());
-        return detallePedidoDAO.actualizar(detalles, datos) != null;
+
+        return detallePedidoDAO.actualizar(
+                detalles, datos
+        ) != null;
     }
 
-    /**
-     * Elimina un detalle de pedido.
-     *
-     * @param id identificador del detalle a eliminar
-     * @return {@code true} si se eliminó; {@code false} si no existe
-     */
     public boolean eliminarDetalle(int id) {
         return detallePedidoDAO.eliminar(detalles, id);
     }
 
-    /**
-     * Elimina en cascada todos los detalles de un pedido.
-     * <p>
-     * Debe llamarse al eliminar un pedido, para mantener la composición y no
-     * dejar detalles huérfanos.
-     * </p>
-     *
-     * @param idPedido identificador del pedido cuyos detalles se eliminan
-     * @return {@code true} si se eliminó al menos un detalle
-     */
     public boolean eliminarDetallesDePedido(int idPedido) {
-        return detallePedidoDAO.eliminarPorPedido(detalles, idPedido);
+        return detallePedidoDAO.eliminarPorPedido(
+                detalles, idPedido
+        );
     }
 }
+

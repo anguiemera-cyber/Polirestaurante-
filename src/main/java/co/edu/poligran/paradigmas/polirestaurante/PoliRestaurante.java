@@ -30,7 +30,7 @@ import java.util.Scanner;
 public class PoliRestaurante {
 
     private static final AngieManager catalogo = new AngieManager();
-    private static final ErikManager operaciones = new ErikManager();
+    private static final ErikManager operaciones = new ErikManager(catalogo);
     private static final JuanManager personal = new JuanManager();
     private static final Scanner sc = new Scanner(System.in);
 

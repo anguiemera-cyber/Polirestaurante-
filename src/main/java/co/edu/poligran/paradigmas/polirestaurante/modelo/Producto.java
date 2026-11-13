@@ -1,39 +1,123 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package co.edu.poligran.paradigmas.polirestaurante.modelo;
 
-/**
- *
- * @author salaG201
- */
-public class Producto{
+public class Producto {
+
     private int id;
     private String nombre;
     private String tipo;
-    
-    
-    
-    public Producto(String nombre, String tipo){
-       this.nombre=nombre;
-       this.tipo=tipo;
-    }
+    private String descripcion;
+    private double precio;
+    private boolean disponible;
 
-    public Producto(int id){
-        this.id=id;
+    public Producto() {
+        this.disponible = true;
     }
     
-    public int getid() { return id; }
-    public void setid(int id) { this.id = id; }
+    public Producto(String nombre, String tipo) {
+        this();
+        this.nombre = nombre;
+        this.tipo = tipo;
+    }
 
-    public String getnombre() { return nombre; }
-    public void setnombre(String nombre) { this.nombre = nombre; }
+    public Producto(String nombre, String tipo,
+                    String descripcion, double precio) {
+        this(nombre, tipo);
+        this.descripcion = descripcion;
+        this.precio = precio;
+    }
 
-    public String gettipo() { return tipo; }
-    public void settipo(String tipo) { this.tipo = tipo; }
-    
-    public String tostring() {
-        return "[" + id + "] " + nombre + " " + tipo;
+    public Producto(int id) {
+        this();
+        this.id = id;
+    }
+
+    public Producto(int id, String nombre, String tipo,
+                    String descripcion, double precio,
+                    boolean disponible) {
+        this.id = id;
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.disponible = disponible;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public boolean isDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    public int getid() {
+        return getId();
+    }
+
+    public void setid(int id) {
+        setId(id);
+    }
+
+    public String getnombre() {
+        return getNombre();
+    }
+
+    public void setnombre(String nombre) {
+        setNombre(nombre);
+    }
+
+    public String gettipo() {
+        return getTipo();
+    }
+
+    public void settipo(String tipo) {
+        setTipo(tipo);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + id + "] " + nombre
+                + " (" + tipo + ") - $"
+                + precio;
     }
 }

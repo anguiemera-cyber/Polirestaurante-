@@ -49,11 +49,10 @@ public class VentanaPrincipal extends JFrame {
         centro.add(grupo("Catálogo",
                 boton("Mesas", () -> new FormularioMesa(catalogo)),
                 boton("Ingredientes", () -> new FormularioIngrediente(catalogo)),
-                boton("Categorías", () -> new FormularioCategoria(catalogo)),
-                boton("Detalles de pedido", () -> new FormularioDetallePedido(catalogo, operaciones))));
+                boton("Categorías", () -> new FormularioCategoria(catalogo))));
 
         centro.add(grupo("Operaciones",
-                boton("Bebidas", () -> new DialogoBebidas(operaciones)),
+                boton("Detalles de pedido", () -> new FormularioDetallePedido(catalogo, operaciones)),
                 boton("Producto", () -> new DialogoProducto(operaciones)),
                 boton("Pedido", () -> new DialogoPedido(operaciones))));
 

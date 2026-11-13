@@ -3,9 +3,9 @@ package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesero;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.JuanManager;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaMesero;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class FormularioMesero extends JFrame {
@@ -29,10 +29,10 @@ public class FormularioMesero extends JFrame {
     private JButton btnLimpiar;
 
     private JTable tabla;
-    private DefaultTableModel modeloTabla;
+    private ModeloTablaMesero modeloTabla;
 
     public FormularioMesero() {
-        this(new JuanManager());
+        this(JuanManager.getInstancia());
     }
 
     public FormularioMesero(JuanManager personal) {
@@ -143,23 +143,7 @@ public class FormularioMesero extends JFrame {
 
     private void configurarTabla() {
 
-        modeloTabla = new DefaultTableModel(
-            new Object[]{
-                "ID",
-                "Nombre",
-                "Apellido",
-                "Tipo documento",
-                "Número documento",
-                "Celular",
-                "Correo",
-                "Usuario"
-            }, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
+        modeloTabla = new ModeloTablaMesero();
 
         tabla = new JTable(modeloTabla);
 
@@ -168,11 +152,14 @@ public class FormularioMesero extends JFrame {
         );
 
         tabla.setRowHeight(25);
+        tabla.setAutoCreateRowSorter(true);
 
         JScrollPane scroll = new JScrollPane(tabla);
 
         scroll.setBorder(
-            BorderFactory.createTitledBorder("Meseros registrados")
+            BorderFactory.createTitledBorder(
+                "Meseros registrados"
+            )
         );
 
         add(scroll, BorderLayout.CENTER);
@@ -209,24 +196,6 @@ public class FormularioMesero extends JFrame {
         );
     }
 
-    private String obtenerNombreTipoDocumento(int tipo) {
-
-        switch (tipo) {
-            case 1:
-                return "Cédula de Ciudadanía";
-            case 2:
-                return "Tarjeta de Identidad";
-            case 3:
-                return "Cédula de Extranjería";
-            case 4:
-                return "Pasaporte";
-            case 5:
-                return "NIT";
-            default:
-                return "Desconocido";
-        }
-    }
-
     private void guardarMesero() {
 
         try {
@@ -235,6 +204,7 @@ public class FormularioMesero extends JFrame {
 
             String nombre = txt1.getText().trim();
             String apellido = txt2.getText().trim();
+
             int tipoDoc = obtenerTipoDocumento();
 
             long numeroDoc = Long.parseLong(
@@ -264,7 +234,6 @@ public class FormularioMesero extends JFrame {
                 return;
             }
 
-            // El ID 0 indica que el DAO lo genera automáticamente.
             Mesero mesero = new Mesero(
                 0,
                 nombre,
@@ -329,10 +298,13 @@ public class FormularioMesero extends JFrame {
 
             validarCampos();
 
-            int id = Integer.parseInt(txt0.getText().trim());
+            int id = Integer.parseInt(
+                txt0.getText().trim()
+            );
 
             String nombre = txt1.getText().trim();
             String apellido = txt2.getText().trim();
+
             int tipoDoc = obtenerTipoDocumento();
 
             long numeroDoc = Long.parseLong(
@@ -414,7 +386,9 @@ public class FormularioMesero extends JFrame {
                 return;
             }
 
-            int id = Integer.parseInt(txt0.getText().trim());
+            int id = Integer.parseInt(
+                txt0.getText().trim()
+            );
 
             int confirmacion = JOptionPane.showConfirmDialog(
                 this,
@@ -453,7 +427,9 @@ public class FormularioMesero extends JFrame {
 
             if (tieneIdSeleccionado()) {
 
-                int id = Integer.parseInt(txt0.getText().trim());
+                int id = Integer.parseInt(
+                    txt0.getText().trim()
+                );
 
                 mesero = personal.buscarMeseroPorId(id);
 
@@ -497,7 +473,9 @@ public class FormularioMesero extends JFrame {
 
     private void cargarDatos(Mesero mesero) {
 
-        txt0.setText(String.valueOf(mesero.getId()));
+        txt0.setText(
+            String.valueOf(mesero.getId())
+        );
 
         txt1.setText(mesero.getNombre());
         txt2.setText(mesero.getApellido());
@@ -530,11 +508,7 @@ public class FormularioMesero extends JFrame {
 
         int filaModelo = tabla.convertRowIndexToModel(fila);
 
-        int id = Integer.parseInt(
-            modeloTabla.getValueAt(filaModelo, 0).toString()
-        );
-
-        Mesero mesero = personal.buscarMeseroPorId(id);
+        Mesero mesero = modeloTabla.getFila(filaModelo);
 
         if (mesero != null) {
             cargarDatos(mesero);
@@ -545,11 +519,9 @@ public class FormularioMesero extends JFrame {
 
         for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-            int idTabla = Integer.parseInt(
-                modeloTabla.getValueAt(i, 0).toString()
-            );
+            Mesero mesero = modeloTabla.getFila(i);
 
-            if (idTabla == id) {
+            if (mesero != null && mesero.getId() == id) {
 
                 int filaVista = tabla.convertRowIndexToView(i);
 
@@ -565,23 +537,9 @@ public class FormularioMesero extends JFrame {
 
     private void actualizarTabla() {
 
-        modeloTabla.setRowCount(0);
-
-        for (Mesero mesero : personal.listarMeseros()) {
-
-            modeloTabla.addRow(new Object[]{
-                mesero.getId(),
-                mesero.getNombre(),
-                mesero.getApellido(),
-                obtenerNombreTipoDocumento(
-                    mesero.getTipoDoc()
-                ),
-                mesero.getNumeroDoc(),
-                mesero.getCelular(),
-                mesero.getCorreo(),
-                mesero.getUsuario()
-            });
-        }
+        modeloTabla.setDatos(
+            personal.listarMeseros()
+        );
     }
 
     private boolean tieneIdSeleccionado() {
@@ -625,7 +583,8 @@ public class FormularioMesero extends JFrame {
         String correo = txt6.getText().trim();
 
         if (!correo.matches(
-                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        )) {
 
             throw new IllegalArgumentException(
                 "El correo electrónico no tiene un formato válido."

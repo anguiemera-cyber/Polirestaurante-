@@ -8,82 +8,192 @@ import co.edu.poligran.paradigmas.polirestaurante.dao.CocineroDAO;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Pedido;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Producto;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Cocinero;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.DetallePedido;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoPedido;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Capa de negocio encargada de administrar pedidos,
- * productos y cocineros del restaurante.
- *
- * Coordina las operaciones entre los modelos y sus DAO.
- *
- */
 public class ErikManager {
 
-    // Listas en memoria para almacenar las entidades.
     private final List<Pedido> pedidos;
     private final List<Producto> productos;
     private final List<Cocinero> cocineros;
 
-    // DAO encargado de las operaciones de cada entidad.
     private final PedidoDAO pedidoDAO;
     private final ProductoDAO productoDAO;
     private final CocineroDAO cocineroDAO;
 
-    // Inicializa las listas y los respectivos DAO.
-    public ErikManager() {
-        this.pedidos = new ArrayList<>();
-        this.productos = new ArrayList<>();
-        this.cocineros = new ArrayList<>();
+    private final AngieManager angie;
 
-        this.pedidoDAO = new PedidoDAO();
-        this.productoDAO = new ProductoDAO();
-        this.cocineroDAO = new CocineroDAO();
+    public ErikManager() {
+        this(new AngieManager());
     }
 
-    // Métodos para administrar los pedidos.
+    public ErikManager(AngieManager angie) {
 
-    // Registra un pedido nuevo.
+        if (angie == null) {
+            throw new IllegalArgumentException(
+                    "AngieManager no puede ser nulo."
+            );
+        }
+
+        this.angie = angie;
+
+        pedidos = new ArrayList<>();
+        productos = new ArrayList<>();
+        cocineros = new ArrayList<>();
+
+        pedidoDAO = new PedidoDAO();
+        productoDAO = new ProductoDAO();
+        cocineroDAO = new CocineroDAO();
+    }
+
+    // =========================================
+    // PRODUCTOS
+    // =========================================
+
+    public Producto crearProducto(Producto producto) {
+        return productoDAO.crear(productos, producto);
+    }
+
+    public List<Producto> listarProductos() {
+        return productoDAO.listar(productos);
+    }
+
+    public Producto buscarProductoPorId(int id) {
+        return productoDAO.buscarPorId(productos, id);
+    }
+
+    public Producto buscarProductoPorNombre(String nombre) {
+        return productoDAO.buscarPorNombre(productos, nombre);
+    }
+
+    public List<Producto> buscarProductosPorTipo(String tipo) {
+        return productoDAO.buscarPorTipo(productos, tipo);
+    }
+
+    public List<Producto> listarProductosDisponibles() {
+        return productoDAO.listarDisponibles(productos);
+    }
+
+    public List<Producto> listarBebidas() {
+        return productoDAO.listarBebidas(productos);
+    }
+
+    public List<Producto> listarBebidasDisponibles() {
+
+        List<Producto> resultado = new ArrayList<>();
+
+        for (Producto producto : listarBebidas()) {
+
+            if (producto.isDisponible()) {
+                resultado.add(producto);
+            }
+        }
+
+        return resultado;
+    }
+
+    public boolean actualizarProducto(Producto datos) {
+        return productoDAO.actualizar(productos, datos) != null;
+    }
+
+    public boolean eliminarProducto(int id) {
+
+        // No se elimina un producto que ya está en un pedido.
+        for (DetallePedido detalle : angie.listarDetalles()) {
+
+            if (detalle.getIdProducto() == id) {
+                return false;
+            }
+        }
+
+        // Tampoco se elimina si está asociado a un pedido antiguo.
+        for (Pedido pedido : pedidos) {
+
+            if (pedido.getProductoPedido() != null
+                    && pedido.getProductoPedido().getId() == id) {
+                return false;
+            }
+        }
+
+        return productoDAO.eliminar(productos, id);
+    }
+
+    public boolean cambiarDisponibilidadProducto(
+            int id, boolean disponible) {
+
+        Producto producto = buscarProductoPorId(id);
+
+        if (producto == null) {
+            return false;
+        }
+
+        producto.setDisponible(disponible);
+        return true;
+    }
+
+    // =========================================
+    // PEDIDOS
+    // =========================================
+
     public Pedido crearPedido(Pedido pedido) {
+
+        if (pedido == null) {
+            throw new IllegalArgumentException(
+                    "El pedido no puede ser nulo."
+            );
+        }
+
         return pedidoDAO.crear(pedidos, pedido);
     }
 
-    // Obtiene todos los pedidos registrados.
     public List<Pedido> listarPedidos() {
         return pedidoDAO.listar(pedidos);
     }
 
-    // Busca un pedido por su identificador.
     public Pedido buscarPedidoPorId(int id) {
         return pedidoDAO.buscarPorId(pedidos, id);
     }
 
-    // Busca los pedidos asociados a una mesa.
     public List<Pedido> buscarPedidosPorMesa(String mesa) {
         return pedidoDAO.buscarPorMesa(pedidos, mesa);
     }
 
-    // Actualiza los datos de un pedido existente.
+    public List<Pedido> buscarPedidosPorEstado(EstadoPedido estado) {
+        return pedidoDAO.buscarPorEstado(pedidos, estado);
+    }
+
     public boolean actualizarPedido(Pedido datos) {
         return pedidoDAO.actualizar(pedidos, datos) != null;
     }
 
-    // Elimina un pedido mediante su identificador.
     public boolean eliminarPedido(int id) {
+
+        Pedido pedido = buscarPedidoPorId(id);
+
+        if (pedido == null) {
+            return false;
+        }
+
+        // Primero se eliminan sus detalles.
+        angie.eliminarDetallesDePedido(id);
+
+        // Después se elimina el pedido.
         return pedidoDAO.eliminar(pedidos, id);
     }
 
-    // Cambia el estado actual de un pedido.
-    public boolean cambiarEstadoPedido(int id, EstadoPedido estado) {
+    public boolean cambiarEstadoPedido(
+            int id, EstadoPedido estado) {
+
         if (estado == null) {
             throw new IllegalArgumentException(
-                "El estado del pedido no puede ser nulo."
+                    "El estado del pedido no puede ser nulo."
             );
         }
 
-        Pedido pedido = pedidoDAO.buscarPorId(pedidos, id);
+        Pedido pedido = buscarPedidoPorId(id);
 
         if (pedido == null) {
             return false;
@@ -93,67 +203,113 @@ public class ErikManager {
         return true;
     }
 
-    // Métodos para administrar los productos.
+    // =========================================
+    // DETALLES DE PEDIDOS
+    // =========================================
 
-    // Registra un producto nuevo.
-    public Producto crearProducto(Producto producto) {
-        return productoDAO.crear(productos, producto);
+    public DetallePedido crearDetallePedido(DetallePedido detalle) {
+
+        if (detalle == null) {
+            throw new IllegalArgumentException(
+                    "El detalle no puede ser nulo."
+            );
+        }
+
+        if (buscarPedidoPorId(detalle.getIdPedido()) == null) {
+            throw new IllegalArgumentException(
+                    "No existe el pedido indicado."
+            );
+        }
+
+        Producto producto =
+                buscarProductoPorId(detalle.getIdProducto());
+
+        if (producto == null) {
+            throw new IllegalArgumentException(
+                    "No existe el producto indicado."
+            );
+        }
+
+        if (!producto.isDisponible()) {
+            throw new IllegalArgumentException(
+                    "El producto no está disponible."
+            );
+        }
+
+        // Se utiliza el precio actual del producto.
+        detalle.setPrecioUnitario(producto.getPrecio());
+
+        return angie.crearDetalle(detalle);
     }
 
-    // Obtiene todos los productos registrados.
-    public List<Producto> listarProductos() {
-        return productoDAO.listar(productos);
+    public List<DetallePedido> listarDetalles() {
+        return angie.listarDetalles();
     }
 
-    // Busca un producto por su identificador.
-    public Producto buscarProductoPorId(int id) {
-        return productoDAO.buscarPorId(productos, id);
+    public List<DetallePedido> buscarDetallesPorPedido(int idPedido) {
+        return angie.buscarDetallesPorPedido(idPedido);
     }
 
-    // Busca un producto por su nombre.
-    public Producto buscarProductoPorNombre(String nombre) {
-        return productoDAO.buscarPorNombre(productos, nombre);
+    public double calcularTotalPedido(int idPedido) {
+        return angie.calcularTotalPedido(idPedido);
     }
 
-    // Actualiza los datos de un producto existente.
-    public boolean actualizarProducto(Producto datos) {
-        return productoDAO.actualizar(productos, datos) != null;
+    public boolean actualizarDetallePedido(DetallePedido detalle) {
+
+        if (detalle == null) {
+            return false;
+        }
+
+        if (buscarPedidoPorId(detalle.getIdPedido()) == null) {
+            return false;
+        }
+
+        Producto producto =
+                buscarProductoPorId(detalle.getIdProducto());
+
+        if (producto == null || !producto.isDisponible()) {
+            return false;
+        }
+
+        detalle.setPrecioUnitario(producto.getPrecio());
+
+        return angie.actualizarDetalle(detalle);
     }
 
-    // Elimina un producto mediante su identificador.
-    public boolean eliminarProducto(int id) {
-        return productoDAO.eliminar(productos, id);
+    public boolean eliminarDetallePedido(int id) {
+        return angie.eliminarDetalle(id);
     }
 
-    // Métodos para administrar los cocineros.
+    // =========================================
+    // COCINEROS
+    // =========================================
 
-    // Registra un cocinero nuevo.
     public Cocinero crearCocinero(Cocinero cocinero) {
         return cocineroDAO.crear(cocineros, cocinero);
     }
 
-    // Obtiene todos los cocineros registrados.
     public List<Cocinero> listarCocineros() {
         return cocineroDAO.listar(cocineros);
     }
 
-    // Busca un cocinero por su identificador.
     public Cocinero buscarCocineroPorId(int id) {
         return cocineroDAO.buscarPorId(cocineros, id);
     }
 
-    // Busca un cocinero por su nombre de usuario.
     public Cocinero buscarCocineroPorUsuario(String usuario) {
         return cocineroDAO.buscarPorUsuario(cocineros, usuario);
     }
 
-    // Actualiza los datos de un cocinero existente.
     public boolean actualizarCocinero(Cocinero datos) {
         return cocineroDAO.actualizar(cocineros, datos) != null;
     }
 
-    // Elimina un cocinero mediante su identificador.
     public boolean eliminarCocinero(int id) {
         return cocineroDAO.eliminar(cocineros, id);
+    }
+    // ACCESO AL MANAGER COMPARTIDO
+
+    public AngieManager getAngieManager() {
+        return angie;
     }
 }
