@@ -1,5 +1,6 @@
 package co.edu.poligran.paradigmas.polirestaurante.tablas;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoMesa;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesa;
 
 /**
@@ -32,7 +33,7 @@ public class ModeloTablaMesa extends ModeloTablaBase<Mesa> {
         switch (columna) {
             case 0: return x.getId();
             case 1: return x.getCantidad();
-            case 2: return x.getEstado();
+            case 2: return EstadoMesa.etiquetaDe(x.getEstado());
             default: return null;
         }
     }

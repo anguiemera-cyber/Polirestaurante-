@@ -1,5 +1,6 @@
 package co.edu.poligran.paradigmas.polirestaurante.tablas;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoIngrediente;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
 
 /**
@@ -32,7 +33,7 @@ public class ModeloTablaIngrediente extends ModeloTablaBase<Ingrediente> {
         switch (columna) {
             case 0: return x.getId();
             case 1: return x.getNombre();
-            case 2: return x.getEstado();
+            case 2: return EstadoIngrediente.etiquetaDe(x.getEstado());
             case 3: return x.getCantidad();
             case 4: return x.isDisponibilidad() ? "Sí" : "No";
             default: return null;

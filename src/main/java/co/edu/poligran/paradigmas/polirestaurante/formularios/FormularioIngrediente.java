@@ -1,7 +1,9 @@
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoIngrediente;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaIngrediente;
 
 /**
  * Formulario (ventana) para gestionar ingredientes: Guardar, Actualizar,
@@ -39,6 +41,12 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     public FormularioIngrediente(AngieManager manager) {
         this.manager = manager;
         initComponents();
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarSeleccionado();
+            }
+        });
+        actualizarTabla();
         btnGuardar.addActionListener(e -> guardar());
         btnActualizar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
@@ -70,11 +78,10 @@ public class FormularioIngrediente extends javax.swing.JFrame {
         panelFormulario.add(txtNombre);
         lblEstado = new javax.swing.JLabel();
         lblEstado.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblEstado.setText("Estado (número):");
+        lblEstado.setText("Estado:");
         panelFormulario.add(lblEstado);
-        txtEstado = new javax.swing.JTextField();
-        txtEstado.setColumns(22);
-        panelFormulario.add(txtEstado);
+        cmbEstado = new javax.swing.JComboBox<>(EstadoIngrediente.values());
+        panelFormulario.add(cmbEstado);
         lblCantidad = new javax.swing.JLabel();
         lblCantidad.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblCantidad.setText("Cantidad:");
@@ -111,9 +118,18 @@ public class FormularioIngrediente extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registro de Ingrediente");
         getContentPane().setLayout(new java.awt.BorderLayout(8, 8));
-        getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
+        modeloTabla = new ModeloTablaIngrediente();
+        tabla = new javax.swing.JTable(modeloTabla);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla.setRowHeight(25);
+        scrollTabla = new javax.swing.JScrollPane(tabla);
+        scrollTabla.setBorder(javax.swing.BorderFactory.createTitledBorder("Ingredientes registrados"));
+        scrollTabla.setPreferredSize(new java.awt.Dimension(620, 230));
+        getContentPane().add(panelFormulario, java.awt.BorderLayout.NORTH);
+        getContentPane().add(scrollTabla, java.awt.BorderLayout.CENTER);
         getContentPane().add(panelBotones, java.awt.BorderLayout.SOUTH);
         pack();
+        setMinimumSize(getSize());
     }
     // </editor-fold>
 
@@ -136,7 +152,7 @@ public class FormularioIngrediente extends javax.swing.JFrame {
             advertir("Ya existe un ingrediente con ese nombre.", txtNombre);
             return;
         }
-        Integer estado = leerEntero(txtEstado, "El estado", 0);
+        Integer estado = leerEstado();
         if (estado == null) {
             return;
         }
@@ -148,6 +164,8 @@ public class FormularioIngrediente extends javax.swing.JFrame {
             Ingrediente ingrediente = manager.crearIngrediente(
                     new Ingrediente(nombre, estado, cantidad, chkDisponible.isSelected()));
             txtId.setText(String.valueOf(ingrediente.getId()));
+            actualizarTabla();
+            seleccionarEnTabla(ingrediente.getId());
             informar("Ingrediente creado con id: " + ingrediente.getId());
         } catch (IllegalArgumentException e) {
             advertir(e.getMessage(), txtNombre);
@@ -172,7 +190,7 @@ public class FormularioIngrediente extends javax.swing.JFrame {
             advertir("Ya existe otro ingrediente con ese nombre.", txtNombre);
             return;
         }
-        Integer estado = leerEntero(txtEstado, "El estado", 0);
+        Integer estado = leerEstado();
         if (estado == null) {
             return;
         }
@@ -182,6 +200,8 @@ public class FormularioIngrediente extends javax.swing.JFrame {
         }
         if (manager.actualizarIngrediente(
                 new Ingrediente(id, nombre, estado, cantidad, chkDisponible.isSelected()))) {
+            actualizarTabla();
+            seleccionarEnTabla(id);
             informar("Ingrediente actualizado correctamente.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
@@ -197,8 +217,9 @@ public class FormularioIngrediente extends javax.swing.JFrame {
             return;
         }
         if (manager.eliminarIngrediente(id)) {
-            informar("Ingrediente eliminado.");
             limpiar();
+            actualizarTabla();
+            informar("Ingrediente eliminado.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
         }
@@ -207,14 +228,24 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     private void limpiar() {
         txtId.setText("");
         txtNombre.setText("");
-        txtEstado.setText("");
+        cmbEstado.setSelectedIndex(0);
         txtCantidad.setText("");
         chkDisponible.setSelected(true);
+        tabla.clearSelection();
         txtId.requestFocusInWindow();
     }
 
     /** Busca por ID; si el ID está vacío y hay un nombre escrito, busca por nombre. */
     private void buscar() {
+        buscarRegistro();
+        try {
+            seleccionarEnTabla(Integer.parseInt(txtId.getText().trim()));
+        } catch (NumberFormatException e) {
+            // No hay un id válido que resaltar.
+        }
+    }
+
+    private void buscarRegistro() {
         Ingrediente ingrediente;
         if (txtId.getText().trim().isEmpty() && !txtNombre.getText().trim().isEmpty()) {
             ingrediente = manager.buscarIngrediente(txtNombre.getText().trim());
@@ -233,11 +264,54 @@ public class FormularioIngrediente extends javax.swing.JFrame {
                 return;
             }
         }
+        mostrar(ingrediente);
+    }
+
+    // -------------------------------------------------------------------- Tabla
+
+    /** Vuelve a cargar la tabla con todos los registros del manager. */
+    private void actualizarTabla() {
+        modeloTabla.setDatos(manager.listarIngredientes());
+    }
+
+    /** Selecciona en la tabla la fila del registro con ese id. */
+    private void seleccionarEnTabla(int id) {
+        for (int fila = 0; fila < modeloTabla.getRowCount(); fila++) {
+            Ingrediente registro = modeloTabla.getFila(fila);
+            if (registro != null && registro.getId() == id) {
+                tabla.setRowSelectionInterval(fila, fila);
+                tabla.scrollRectToVisible(tabla.getCellRect(fila, 0, true));
+                return;
+            }
+        }
+    }
+
+    /** Carga en el formulario el registro seleccionado en la tabla. */
+    private void cargarSeleccionado() {
+        Ingrediente registro = modeloTabla.getFila(tabla.getSelectedRow());
+        if (registro != null) {
+            mostrar(registro);
+        }
+    }
+
+    /** Carga un ingrediente en los campos del formulario. */
+    private void mostrar(Ingrediente ingrediente) {
         txtId.setText(String.valueOf(ingrediente.getId()));
         txtNombre.setText(ingrediente.getNombre());
-        txtEstado.setText(String.valueOf(ingrediente.getEstado()));
+        // Si el código no es de ningún estado conocido, el desplegable queda vacío.
+        cmbEstado.setSelectedItem(EstadoIngrediente.desdeCodigo(ingrediente.getEstado()));
         txtCantidad.setText(String.valueOf(ingrediente.getCantidad()));
         chkDisponible.setSelected(ingrediente.isDisponibilidad());
+    }
+
+    /** Devuelve el código del estado elegido; advierte y devuelve null si no hay ninguno. */
+    private Integer leerEstado() {
+        EstadoIngrediente estado = (EstadoIngrediente) cmbEstado.getSelectedItem();
+        if (estado == null) {
+            advertir("Seleccione un estado.", cmbEstado);
+            return null;
+        }
+        return estado.getCodigo();
     }
 
     // ---------------------------------------------------------------- Utilidades
@@ -286,6 +360,9 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
+    private ModeloTablaIngrediente modeloTabla;
+    private javax.swing.JTable tabla;
+    private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JPanel panelFormulario;
     private javax.swing.JPanel panelBotones;
     private javax.swing.JLabel lblId;
@@ -293,7 +370,7 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     private javax.swing.JLabel lblNombre;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JLabel lblEstado;
-    private javax.swing.JTextField txtEstado;
+    private javax.swing.JComboBox<EstadoIngrediente> cmbEstado;
     private javax.swing.JLabel lblCantidad;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JLabel lblDisponible;

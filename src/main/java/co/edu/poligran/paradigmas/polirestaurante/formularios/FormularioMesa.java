@@ -1,7 +1,9 @@
 package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoMesa;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesa;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaMesa;
 
 /**
  * Formulario (ventana) para gestionar mesas: Guardar, Actualizar,
@@ -39,6 +41,12 @@ public class FormularioMesa extends javax.swing.JFrame {
     public FormularioMesa(AngieManager manager) {
         this.manager = manager;
         initComponents();
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarSeleccionado();
+            }
+        });
+        actualizarTabla();
         btnGuardar.addActionListener(e -> guardar());
         btnActualizar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
@@ -70,11 +78,10 @@ public class FormularioMesa extends javax.swing.JFrame {
         panelFormulario.add(txtCapacidad);
         lblEstado = new javax.swing.JLabel();
         lblEstado.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblEstado.setText("Estado (1=Disponible, 0=Por limpiar):");
+        lblEstado.setText("Estado:");
         panelFormulario.add(lblEstado);
-        txtEstado = new javax.swing.JTextField();
-        txtEstado.setColumns(22);
-        panelFormulario.add(txtEstado);
+        cmbEstado = new javax.swing.JComboBox<>(EstadoMesa.values());
+        panelFormulario.add(cmbEstado);
         panelFormulario.setLayout(new java.awt.GridLayout(0, 2, 8, 8));
         panelFormulario.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 4, 12));
         panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 6, 6));
@@ -96,9 +103,18 @@ public class FormularioMesa extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registro de Mesa");
         getContentPane().setLayout(new java.awt.BorderLayout(8, 8));
-        getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
+        modeloTabla = new ModeloTablaMesa();
+        tabla = new javax.swing.JTable(modeloTabla);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla.setRowHeight(25);
+        scrollTabla = new javax.swing.JScrollPane(tabla);
+        scrollTabla.setBorder(javax.swing.BorderFactory.createTitledBorder("Mesas registradas"));
+        scrollTabla.setPreferredSize(new java.awt.Dimension(560, 230));
+        getContentPane().add(panelFormulario, java.awt.BorderLayout.NORTH);
+        getContentPane().add(scrollTabla, java.awt.BorderLayout.CENTER);
         getContentPane().add(panelBotones, java.awt.BorderLayout.SOUTH);
         pack();
+        setMinimumSize(getSize());
     }
     // </editor-fold>
 
@@ -117,13 +133,15 @@ public class FormularioMesa extends javax.swing.JFrame {
         if (capacidad == null) {
             return;
         }
-        Integer estado = leerEntero(txtEstado, "El estado", 0);
+        Integer estado = leerEstado();
         if (estado == null) {
             return;
         }
         try {
             Mesa mesa = manager.crearMesa(new Mesa(capacidad, estado));
             txtId.setText(String.valueOf(mesa.getId()));
+            actualizarTabla();
+            seleccionarEnTabla(mesa.getId());
             informar("Mesa creada con id: " + mesa.getId());
         } catch (IllegalArgumentException e) {
             advertir(e.getMessage(), txtCapacidad);
@@ -143,11 +161,13 @@ public class FormularioMesa extends javax.swing.JFrame {
         if (capacidad == null) {
             return;
         }
-        Integer estado = leerEntero(txtEstado, "El estado", 0);
+        Integer estado = leerEstado();
         if (estado == null) {
             return;
         }
         if (manager.actualizarMesa(new Mesa(id, capacidad, estado))) {
+            actualizarTabla();
+            seleccionarEnTabla(id);
             informar("Mesa actualizada correctamente.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
@@ -163,8 +183,9 @@ public class FormularioMesa extends javax.swing.JFrame {
             return;
         }
         if (manager.eliminarMesa(id)) {
-            informar("Mesa eliminada.");
             limpiar();
+            actualizarTabla();
+            informar("Mesa eliminada.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
         }
@@ -173,11 +194,21 @@ public class FormularioMesa extends javax.swing.JFrame {
     private void limpiar() {
         txtId.setText("");
         txtCapacidad.setText("");
-        txtEstado.setText("");
+        cmbEstado.setSelectedIndex(0);
+        tabla.clearSelection();
         txtId.requestFocusInWindow();
     }
 
     private void buscar() {
+        buscarRegistro();
+        try {
+            seleccionarEnTabla(Integer.parseInt(txtId.getText().trim()));
+        } catch (NumberFormatException e) {
+            // No hay un id válido que resaltar.
+        }
+    }
+
+    private void buscarRegistro() {
         Integer id = leerEntero(txtId, "El ID", 1);
         if (id == null) {
             return;
@@ -187,8 +218,52 @@ public class FormularioMesa extends javax.swing.JFrame {
             advertir(NO_ENCONTRADO, txtId);
             return;
         }
+        mostrar(mesa);
+    }
+
+    // -------------------------------------------------------------------- Tabla
+
+    /** Vuelve a cargar la tabla con todos los registros del manager. */
+    private void actualizarTabla() {
+        modeloTabla.setDatos(manager.listarMesas());
+    }
+
+    /** Selecciona en la tabla la fila del registro con ese id. */
+    private void seleccionarEnTabla(int id) {
+        for (int fila = 0; fila < modeloTabla.getRowCount(); fila++) {
+            Mesa registro = modeloTabla.getFila(fila);
+            if (registro != null && registro.getId() == id) {
+                tabla.setRowSelectionInterval(fila, fila);
+                tabla.scrollRectToVisible(tabla.getCellRect(fila, 0, true));
+                return;
+            }
+        }
+    }
+
+    /** Carga en el formulario el registro seleccionado en la tabla. */
+    private void cargarSeleccionado() {
+        Mesa registro = modeloTabla.getFila(tabla.getSelectedRow());
+        if (registro != null) {
+            mostrar(registro);
+        }
+    }
+
+    /** Carga una mesa en los campos del formulario. */
+    private void mostrar(Mesa mesa) {
+        txtId.setText(String.valueOf(mesa.getId()));
         txtCapacidad.setText(String.valueOf(mesa.getCantidad()));
-        txtEstado.setText(String.valueOf(mesa.getEstado()));
+        // Si el código no es de ningún estado conocido, el desplegable queda vacío.
+        cmbEstado.setSelectedItem(EstadoMesa.desdeCodigo(mesa.getEstado()));
+    }
+
+    /** Devuelve el código del estado elegido; advierte y devuelve null si no hay ninguno. */
+    private Integer leerEstado() {
+        EstadoMesa estado = (EstadoMesa) cmbEstado.getSelectedItem();
+        if (estado == null) {
+            advertir("Seleccione un estado.", cmbEstado);
+            return null;
+        }
+        return estado.getCodigo();
     }
 
     // ---------------------------------------------------------------- Utilidades
@@ -237,6 +312,9 @@ public class FormularioMesa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
+    private ModeloTablaMesa modeloTabla;
+    private javax.swing.JTable tabla;
+    private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JPanel panelFormulario;
     private javax.swing.JPanel panelBotones;
     private javax.swing.JLabel lblId;
@@ -244,7 +322,7 @@ public class FormularioMesa extends javax.swing.JFrame {
     private javax.swing.JLabel lblCapacidad;
     private javax.swing.JTextField txtCapacidad;
     private javax.swing.JLabel lblEstado;
-    private javax.swing.JTextField txtEstado;
+    private javax.swing.JComboBox<EstadoMesa> cmbEstado;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnEliminar;

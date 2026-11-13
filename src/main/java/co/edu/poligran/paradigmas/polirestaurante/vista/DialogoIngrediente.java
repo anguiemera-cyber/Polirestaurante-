@@ -1,5 +1,6 @@
 package co.edu.poligran.paradigmas.polirestaurante.vista;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoIngrediente;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
 import co.edu.poligran.paradigmas.polirestaurante.util.Validaciones;
@@ -10,6 +11,7 @@ import java.awt.Window;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -40,8 +42,8 @@ public class DialogoIngrediente extends JDialog {
     /** Campo de captura del nombre. */
     private final JTextField txtNombre = new JTextField(20);
 
-    /** Campo de captura del estado (número mayor o igual a cero). */
-    private final JSpinner spnEstado;
+    /** Selector del estado del ingrediente. */
+    private final JComboBox<EstadoIngrediente> cmbEstado = new JComboBox<>(EstadoIngrediente.values());
 
     /** Campo de captura de la cantidad en existencia. */
     private final JSpinner spnCantidad;
@@ -65,15 +67,16 @@ public class DialogoIngrediente extends JDialog {
         this.manager = manager;
         this.original = original;
 
-        int estado = 0;
         int cantidad = 0;
         if (original != null) {
             txtNombre.setText(original.getNombre());
-            estado = Math.min(999, Math.max(0, original.getEstado()));
+            EstadoIngrediente estado = EstadoIngrediente.desdeCodigo(original.getEstado());
+            if (estado != null) {
+                cmbEstado.setSelectedItem(estado);
+            }
             cantidad = Math.min(1_000_000, Math.max(0, original.getCantidad()));
             chkDisponible.setSelected(original.isDisponibilidad());
         }
-        spnEstado = new JSpinner(new SpinnerNumberModel(estado, 0, 999, 1));
         spnCantidad = new JSpinner(new SpinnerNumberModel(cantidad, 0, 1_000_000, 1));
 
         setLayout(new BorderLayout(8, 8));
@@ -95,7 +98,7 @@ public class DialogoIngrediente extends JDialog {
         panel.add(new JLabel(Mensajes.ETIQUETA_NOMBRE, SwingConstants.RIGHT));
         panel.add(txtNombre);
         panel.add(new JLabel(Mensajes.ETIQUETA_ESTADO, SwingConstants.RIGHT));
-        panel.add(spnEstado);
+        panel.add(cmbEstado);
         panel.add(new JLabel(Mensajes.ETIQUETA_CANTIDAD, SwingConstants.RIGHT));
         panel.add(spnCantidad);
         panel.add(new JLabel());
@@ -142,7 +145,7 @@ public class DialogoIngrediente extends JDialog {
             txtNombre.requestFocusInWindow();
             return;
         }
-        int estado = ((Number) spnEstado.getValue()).intValue();
+        int estado = ((EstadoIngrediente) cmbEstado.getSelectedItem()).getCodigo();
         int cantidad = ((Number) spnCantidad.getValue()).intValue();
         resultado = new Ingrediente(nombre, estado, cantidad, chkDisponible.isSelected());
         if (original != null) {

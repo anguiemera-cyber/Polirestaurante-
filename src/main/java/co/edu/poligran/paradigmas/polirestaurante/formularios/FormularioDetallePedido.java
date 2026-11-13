@@ -2,6 +2,7 @@ package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.DetallePedido;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaDetallePedido;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
 
 /**
@@ -45,6 +46,12 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         this.angie = angie;
         this.erik = erik;
         initComponents();
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarSeleccionado();
+            }
+        });
+        actualizarTabla();
         btnGuardar.addActionListener(e -> guardar());
         btnActualizar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
@@ -117,9 +124,18 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registro de Detalle de Pedido");
         getContentPane().setLayout(new java.awt.BorderLayout(8, 8));
-        getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
+        modeloTabla = new ModeloTablaDetallePedido();
+        tabla = new javax.swing.JTable(modeloTabla);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla.setRowHeight(25);
+        scrollTabla = new javax.swing.JScrollPane(tabla);
+        scrollTabla.setBorder(javax.swing.BorderFactory.createTitledBorder("Detalles registrados"));
+        scrollTabla.setPreferredSize(new java.awt.Dimension(620, 230));
+        getContentPane().add(panelFormulario, java.awt.BorderLayout.NORTH);
+        getContentPane().add(scrollTabla, java.awt.BorderLayout.CENTER);
         getContentPane().add(panelBotones, java.awt.BorderLayout.SOUTH);
         pack();
+        setMinimumSize(getSize());
     }
     // </editor-fold>
 
@@ -153,6 +169,8 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         try {
             DetallePedido detalle = angie.crearDetalle(new DetallePedido(idPedido, precio, cantidad));
             mostrar(detalle);
+            actualizarTabla();
+            seleccionarEnTabla(detalle.getIdDetalle());
             informar("Detalle creado con id: " + detalle.getIdDetalle()
                     + "\nSubtotal: " + detalle.getSubtotal());
         } catch (IllegalArgumentException e) {
@@ -190,6 +208,8 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         DetallePedido datos = new DetallePedido(id, actual.getIdPedido(), precio, cantidad);
         if (angie.actualizarDetalle(datos)) {
             mostrar(datos);
+            actualizarTabla();
+            seleccionarEnTabla(id);
             informar("Detalle actualizado correctamente.\nSubtotal: " + datos.getSubtotal());
         } else {
             advertir(NO_ENCONTRADO, txtId);
@@ -205,8 +225,9 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
             return;
         }
         if (angie.eliminarDetalle(id)) {
-            informar("Detalle eliminado.");
             limpiar();
+            actualizarTabla();
+            informar("Detalle eliminado.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
         }
@@ -218,10 +239,20 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         txtPrecio.setText("");
         txtCantidad.setText("");
         txtSubtotal.setText("");
+        tabla.clearSelection();
         txtId.requestFocusInWindow();
     }
 
     private void buscar() {
+        buscarRegistro();
+        try {
+            seleccionarEnTabla(Integer.parseInt(txtId.getText().trim()));
+        } catch (NumberFormatException e) {
+            // No hay un id válido que resaltar.
+        }
+    }
+
+    private void buscarRegistro() {
         Integer id = leerEntero(txtId, "El ID", 1);
         if (id == null) {
             return;
@@ -241,6 +272,33 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
         txtPrecio.setText(String.valueOf(detalle.getPrecioUnitario()));
         txtCantidad.setText(String.valueOf(detalle.getCantidad()));
         txtSubtotal.setText(String.valueOf(detalle.getSubtotal()));
+    }
+
+    // -------------------------------------------------------------------- Tabla
+
+    /** Vuelve a cargar la tabla con todos los registros del manager. */
+    private void actualizarTabla() {
+        modeloTabla.setDatos(angie.listarDetalles());
+    }
+
+    /** Selecciona en la tabla la fila del registro con ese id. */
+    private void seleccionarEnTabla(int id) {
+        for (int fila = 0; fila < modeloTabla.getRowCount(); fila++) {
+            DetallePedido registro = modeloTabla.getFila(fila);
+            if (registro != null && registro.getIdDetalle() == id) {
+                tabla.setRowSelectionInterval(fila, fila);
+                tabla.scrollRectToVisible(tabla.getCellRect(fila, 0, true));
+                return;
+            }
+        }
+    }
+
+    /** Carga en el formulario el registro seleccionado en la tabla. */
+    private void cargarSeleccionado() {
+        DetallePedido registro = modeloTabla.getFila(tabla.getSelectedRow());
+        if (registro != null) {
+            mostrar(registro);
+        }
     }
 
     // ---------------------------------------------------------------- Utilidades
@@ -304,6 +362,9 @@ public class FormularioDetallePedido extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
+    private ModeloTablaDetallePedido modeloTabla;
+    private javax.swing.JTable tabla;
+    private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JPanel panelFormulario;
     private javax.swing.JPanel panelBotones;
     private javax.swing.JLabel lblId;

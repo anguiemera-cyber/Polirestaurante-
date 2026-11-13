@@ -2,6 +2,7 @@ package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Categoria;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaCategoria;
 
 /**
  * Formulario (ventana) para gestionar categorías: Guardar, Actualizar,
@@ -39,6 +40,12 @@ public class FormularioCategoria extends javax.swing.JFrame {
     public FormularioCategoria(AngieManager manager) {
         this.manager = manager;
         initComponents();
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarSeleccionado();
+            }
+        });
+        actualizarTabla();
         btnGuardar.addActionListener(e -> guardar());
         btnActualizar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
@@ -96,9 +103,18 @@ public class FormularioCategoria extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registro de Categoría");
         getContentPane().setLayout(new java.awt.BorderLayout(8, 8));
-        getContentPane().add(panelFormulario, java.awt.BorderLayout.CENTER);
+        modeloTabla = new ModeloTablaCategoria();
+        tabla = new javax.swing.JTable(modeloTabla);
+        tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla.setRowHeight(25);
+        scrollTabla = new javax.swing.JScrollPane(tabla);
+        scrollTabla.setBorder(javax.swing.BorderFactory.createTitledBorder("Categorías registradas"));
+        scrollTabla.setPreferredSize(new java.awt.Dimension(560, 230));
+        getContentPane().add(panelFormulario, java.awt.BorderLayout.NORTH);
+        getContentPane().add(scrollTabla, java.awt.BorderLayout.CENTER);
         getContentPane().add(panelBotones, java.awt.BorderLayout.SOUTH);
         pack();
+        setMinimumSize(getSize());
     }
     // </editor-fold>
 
@@ -128,6 +144,8 @@ public class FormularioCategoria extends javax.swing.JFrame {
         try {
             Categoria categoria = manager.crearCategoria(new Categoria(nombre, descripcion));
             txtId.setText(String.valueOf(categoria.getId()));
+            actualizarTabla();
+            seleccionarEnTabla(categoria.getId());
             informar("Categoría creada con id: " + categoria.getId());
         } catch (IllegalArgumentException e) {
             advertir(e.getMessage(), txtNombre);
@@ -157,6 +175,8 @@ public class FormularioCategoria extends javax.swing.JFrame {
             return;
         }
         if (manager.actualizarCategoria(new Categoria(id, nombre, descripcion))) {
+            actualizarTabla();
+            seleccionarEnTabla(id);
             informar("Categoría actualizada correctamente.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
@@ -172,8 +192,9 @@ public class FormularioCategoria extends javax.swing.JFrame {
             return;
         }
         if (manager.eliminarCategoria(id)) {
-            informar("Categoría eliminada.");
             limpiar();
+            actualizarTabla();
+            informar("Categoría eliminada.");
         } else {
             advertir(NO_ENCONTRADO, txtId);
         }
@@ -183,11 +204,21 @@ public class FormularioCategoria extends javax.swing.JFrame {
         txtId.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
+        tabla.clearSelection();
         txtId.requestFocusInWindow();
     }
 
     /** Busca por ID; si el ID está vacío y hay un nombre escrito, busca por nombre. */
     private void buscar() {
+        buscarRegistro();
+        try {
+            seleccionarEnTabla(Integer.parseInt(txtId.getText().trim()));
+        } catch (NumberFormatException e) {
+            // No hay un id válido que resaltar.
+        }
+    }
+
+    private void buscarRegistro() {
         Categoria categoria;
         if (txtId.getText().trim().isEmpty() && !txtNombre.getText().trim().isEmpty()) {
             categoria = manager.buscarCategoria(txtNombre.getText().trim());
@@ -206,6 +237,38 @@ public class FormularioCategoria extends javax.swing.JFrame {
                 return;
             }
         }
+        mostrar(categoria);
+    }
+
+    // -------------------------------------------------------------------- Tabla
+
+    /** Vuelve a cargar la tabla con todos los registros del manager. */
+    private void actualizarTabla() {
+        modeloTabla.setDatos(manager.listarCategorias());
+    }
+
+    /** Selecciona en la tabla la fila del registro con ese id. */
+    private void seleccionarEnTabla(int id) {
+        for (int fila = 0; fila < modeloTabla.getRowCount(); fila++) {
+            Categoria registro = modeloTabla.getFila(fila);
+            if (registro != null && registro.getId() == id) {
+                tabla.setRowSelectionInterval(fila, fila);
+                tabla.scrollRectToVisible(tabla.getCellRect(fila, 0, true));
+                return;
+            }
+        }
+    }
+
+    /** Carga en el formulario el registro seleccionado en la tabla. */
+    private void cargarSeleccionado() {
+        Categoria registro = modeloTabla.getFila(tabla.getSelectedRow());
+        if (registro != null) {
+            mostrar(registro);
+        }
+    }
+
+    /** Carga una categoría en los campos del formulario. */
+    private void mostrar(Categoria categoria) {
         txtId.setText(String.valueOf(categoria.getId()));
         txtNombre.setText(categoria.getNombre());
         txtDescripcion.setText(categoria.getDescripcion());
@@ -257,6 +320,9 @@ public class FormularioCategoria extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
+    private ModeloTablaCategoria modeloTabla;
+    private javax.swing.JTable tabla;
+    private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JPanel panelFormulario;
     private javax.swing.JPanel panelBotones;
     private javax.swing.JLabel lblId;

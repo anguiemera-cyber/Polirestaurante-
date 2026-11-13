@@ -1,5 +1,6 @@
 package co.edu.poligran.paradigmas.polirestaurante.vista;
 
+import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoMesa;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Mesa;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -33,9 +34,8 @@ public class DialogoMesa extends JDialog {
     /** Campo de captura de la capacidad. */
     private final JSpinner spnCapacidad;
 
-    /** Selector del estado (1 = Disponible, 0 = Por limpiar). */
-    private final JComboBox<String> cmbEstado = new JComboBox<>(
-            new String[]{Mensajes.ESTADO_DISPONIBLE, Mensajes.ESTADO_POR_LIMPIAR});
+    /** Selector del estado de la mesa. */
+    private final JComboBox<EstadoMesa> cmbEstado = new JComboBox<>(EstadoMesa.values());
 
     /** Mesa armada al aceptar; queda {@code null} si se cancela. */
     private transient Mesa resultado;
@@ -54,7 +54,10 @@ public class DialogoMesa extends JDialog {
         int capacidad = 4;
         if (original != null) {
             capacidad = Math.min(999, Math.max(1, original.getCantidad()));
-            cmbEstado.setSelectedIndex(original.getEstado() == 1 ? 0 : 1);
+            EstadoMesa estado = EstadoMesa.desdeCodigo(original.getEstado());
+            if (estado != null) {
+                cmbEstado.setSelectedItem(estado);
+            }
         }
         spnCapacidad = new JSpinner(new SpinnerNumberModel(capacidad, 1, 999, 1));
 
@@ -105,7 +108,7 @@ public class DialogoMesa extends JDialog {
      */
     private void aceptar() {
         int capacidad = ((Number) spnCapacidad.getValue()).intValue();
-        int estado = (cmbEstado.getSelectedIndex() == 0) ? 1 : 0;
+        int estado = ((EstadoMesa) cmbEstado.getSelectedItem()).getCodigo();
         resultado = new Mesa(capacidad, estado);
         if (original != null) {
             resultado.setId(original.getId());

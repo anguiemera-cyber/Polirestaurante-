@@ -34,10 +34,6 @@ public final class Mensajes {
     public static final String ETIQUETA_PEDIDO = "Pedido:";
     public static final String ETIQUETA_PRECIO = "Precio unitario:";
 
-    // Opciones de estado de una mesa (1 = Disponible, 0 = Por limpiar).
-    public static final String ESTADO_DISPONIBLE = "Disponible";
-    public static final String ESTADO_POR_LIMPIAR = "Por limpiar";
-
     // Mensajes de validación.
     public static final String NOMBRE_OBLIGATORIO = "El nombre es obligatorio.";
     public static final String DESCRIPCION_OBLIGATORIA = "La descripción es obligatoria.";
