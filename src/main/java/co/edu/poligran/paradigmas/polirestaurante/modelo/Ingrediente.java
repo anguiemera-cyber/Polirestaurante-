@@ -14,6 +14,7 @@ public class Ingrediente {
     private int estado;
     private int cantidad;
     private Boolean disponibilidad;
+    private int idCategoria;
     
  public Ingrediente(){}
  
@@ -29,6 +30,9 @@ public class Ingrediente {
         this.id = id;
     }
  
+ public int getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
+
  public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

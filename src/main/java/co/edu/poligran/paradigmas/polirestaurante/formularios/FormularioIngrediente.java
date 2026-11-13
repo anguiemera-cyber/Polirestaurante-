@@ -2,6 +2,7 @@ package co.edu.poligran.paradigmas.polirestaurante.formularios;
 
 import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoIngrediente;
 import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
+import co.edu.poligran.paradigmas.polirestaurante.modelo.Categoria;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.AngieManager;
 import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaIngrediente;
 
@@ -46,12 +47,20 @@ public class FormularioIngrediente extends javax.swing.JFrame {
                 cargarSeleccionado();
             }
         });
+        modeloTabla.setNombreCategoria(id -> {
+            Categoria c = manager.buscarCategoriaPorId(id);
+            return c == null ? "(Sin categoría)" : c.getNombre();
+        });
         actualizarTabla();
         btnGuardar.addActionListener(e -> guardar());
         btnActualizar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
         btnLimpiar.addActionListener(e -> limpiar());
         btnBuscar.addActionListener(e -> buscar());
+        addWindowFocusListener(new java.awt.event.WindowAdapter() {
+            @Override public void windowGainedFocus(java.awt.event.WindowEvent e) { cargarCategorias(); actualizarTabla(); }
+        });
+        cargarCategorias();
         setLocationRelativeTo(null);
     }
 
@@ -76,6 +85,11 @@ public class FormularioIngrediente extends javax.swing.JFrame {
         txtNombre = new javax.swing.JTextField();
         txtNombre.setColumns(22);
         panelFormulario.add(txtNombre);
+        lblCategoria = new javax.swing.JLabel("Categoría:");
+        lblCategoria.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        panelFormulario.add(lblCategoria);
+        cmbCategoria = new javax.swing.JComboBox<>();
+        panelFormulario.add(cmbCategoria);
         lblEstado = new javax.swing.JLabel();
         lblEstado.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblEstado.setText("Estado:");
@@ -161,8 +175,11 @@ public class FormularioIngrediente extends javax.swing.JFrame {
             return;
         }
         try {
-            Ingrediente ingrediente = manager.crearIngrediente(
-                    new Ingrediente(nombre, estado, cantidad, chkDisponible.isSelected()));
+            Categoria categoria = (Categoria) cmbCategoria.getSelectedItem();
+            if (categoria == null) { advertir("Primero registre y seleccione una categoría.", cmbCategoria); return; }
+            Ingrediente nuevo = new Ingrediente(nombre, estado, cantidad, chkDisponible.isSelected());
+            nuevo.setIdCategoria(categoria.getId());
+            Ingrediente ingrediente = manager.crearIngrediente(nuevo);
             txtId.setText(String.valueOf(ingrediente.getId()));
             actualizarTabla();
             seleccionarEnTabla(ingrediente.getId());
@@ -198,8 +215,11 @@ public class FormularioIngrediente extends javax.swing.JFrame {
         if (cantidad == null) {
             return;
         }
-        if (manager.actualizarIngrediente(
-                new Ingrediente(id, nombre, estado, cantidad, chkDisponible.isSelected()))) {
+        Categoria categoria = (Categoria) cmbCategoria.getSelectedItem();
+        if (categoria == null) { advertir("Seleccione una categoría.", cmbCategoria); return; }
+        Ingrediente datos = new Ingrediente(id, nombre, estado, cantidad, chkDisponible.isSelected());
+        datos.setIdCategoria(categoria.getId());
+        if (manager.actualizarIngrediente(datos)) {
             actualizarTabla();
             seleccionarEnTabla(id);
             informar("Ingrediente actualizado correctamente.");
@@ -228,6 +248,7 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     private void limpiar() {
         txtId.setText("");
         txtNombre.setText("");
+        cargarCategorias();
         cmbEstado.setSelectedIndex(0);
         txtCantidad.setText("");
         chkDisponible.setSelected(true);
@@ -270,6 +291,17 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     // -------------------------------------------------------------------- Tabla
 
     /** Vuelve a cargar la tabla con todos los registros del manager. */
+    private void cargarCategorias() {
+        int anterior = -1;
+        Categoria seleccion = (Categoria) cmbCategoria.getSelectedItem();
+        if (seleccion != null) anterior = seleccion.getId();
+        cmbCategoria.removeAllItems();
+        for (Categoria c : manager.listarCategorias()) {
+            cmbCategoria.addItem(c);
+            if (c.getId() == anterior) cmbCategoria.setSelectedItem(c);
+        }
+    }
+
     private void actualizarTabla() {
         modeloTabla.setDatos(manager.listarIngredientes());
     }
@@ -298,6 +330,12 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     private void mostrar(Ingrediente ingrediente) {
         txtId.setText(String.valueOf(ingrediente.getId()));
         txtNombre.setText(ingrediente.getNombre());
+        cargarCategorias();
+        for (int i = 0; i < cmbCategoria.getItemCount(); i++) {
+            if (cmbCategoria.getItemAt(i).getId() == ingrediente.getIdCategoria()) {
+                cmbCategoria.setSelectedIndex(i); break;
+            }
+        }
         // Si el código no es de ningún estado conocido, el desplegable queda vacío.
         cmbEstado.setSelectedItem(EstadoIngrediente.desdeCodigo(ingrediente.getEstado()));
         txtCantidad.setText(String.valueOf(ingrediente.getCantidad()));
@@ -360,6 +398,8 @@ public class FormularioIngrediente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
+    private javax.swing.JLabel lblCategoria;
+    private javax.swing.JComboBox<Categoria> cmbCategoria;
     private ModeloTablaIngrediente modeloTabla;
     private javax.swing.JTable tabla;
     private javax.swing.JScrollPane scrollTabla;

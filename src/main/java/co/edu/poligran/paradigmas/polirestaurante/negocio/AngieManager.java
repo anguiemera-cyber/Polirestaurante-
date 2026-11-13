@@ -144,6 +144,13 @@ public class AngieManager {
     }
  
     // =====================================================================
+    private void validarCategoriaIngrediente(Ingrediente ingrediente) {
+        if (ingrediente == null || ingrediente.getIdCategoria() <= 0
+                || buscarCategoriaPorId(ingrediente.getIdCategoria()) == null) {
+            throw new IllegalArgumentException("Seleccione una categoría existente para el ingrediente.");
+        }
+    }
+
     // Ingredientes
     // =====================================================================
  
@@ -155,6 +162,7 @@ public class AngieManager {
      * @throws IllegalArgumentException si el ingrediente es {@code null} o su id ya existe
      */
     public Ingrediente crearIngrediente(Ingrediente ingrediente) {
+        validarCategoriaIngrediente(ingrediente);
         return ingredienteDAO.crear(ingredientes, ingrediente);
     }
  
@@ -206,6 +214,7 @@ public class AngieManager {
      *         ingrediente con ese id
      */
     public boolean actualizarIngrediente(Ingrediente datos) {
+        validarCategoriaIngrediente(datos);
         return ingredienteDAO.actualizar(ingredientes, datos) != null;
     }
  
@@ -282,6 +291,11 @@ public class AngieManager {
      * @return {@code true} si se eliminó; {@code false} si no existe
      */
     public boolean eliminarCategoria(int id) {
+        for (Ingrediente ingrediente : ingredientes) {
+            if (ingrediente.getIdCategoria() == id) {
+                return false; // Categoría utilizada por un ingrediente.
+            }
+        }
         return categoriaDAO.eliminar(categorias, id);
     }
 

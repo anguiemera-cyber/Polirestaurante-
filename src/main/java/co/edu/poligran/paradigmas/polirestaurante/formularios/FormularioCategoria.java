@@ -196,7 +196,7 @@ public class FormularioCategoria extends javax.swing.JFrame {
             actualizarTabla();
             informar("Categoría eliminada.");
         } else {
-            advertir(NO_ENCONTRADO, txtId);
+            advertir("No se puede eliminar: categoría inexistente o con ingredientes asociados.", txtId);
         }
     }
 

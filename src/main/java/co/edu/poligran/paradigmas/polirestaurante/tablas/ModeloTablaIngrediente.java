@@ -11,10 +11,18 @@ import co.edu.poligran.paradigmas.polirestaurante.modelo.Ingrediente;
 public class ModeloTablaIngrediente extends ModeloTablaBase<Ingrediente> {
 
     private static final long serialVersionUID = 1L;
+    private java.util.function.IntFunction<String> nombreCategoria = id -> String.valueOf(id);
+
+    public void setNombreCategoria(java.util.function.IntFunction<String> resolver) {
+        this.nombreCategoria = resolver;
+        fireTableDataChanged();
+    }
+
+    private String nombreCategoria(int id) { return nombreCategoria.apply(id); }
 
     /** Crea el modelo con las columnas de la tabla. */
     public ModeloTablaIngrediente() {
-        super("Id", "Nombre", "Estado", "Cantidad", "Disponible");
+        super("Id", "Nombre", "Categoría", "Estado", "Cantidad", "Disponible");
     }
 
     /**
@@ -33,9 +41,10 @@ public class ModeloTablaIngrediente extends ModeloTablaBase<Ingrediente> {
         switch (columna) {
             case 0: return x.getId();
             case 1: return x.getNombre();
-            case 2: return EstadoIngrediente.etiquetaDe(x.getEstado());
-            case 3: return x.getCantidad();
-            case 4: return x.isDisponibilidad() ? "Sí" : "No";
+            case 2: return nombreCategoria(x.getIdCategoria());
+            case 3: return EstadoIngrediente.etiquetaDe(x.getEstado());
+            case 4: return x.getCantidad();
+            case 5: return x.isDisponibilidad() ? "Sí" : "No";
             default: return null;
         }
     }

@@ -57,6 +57,14 @@
             <Property name="columns" type="int" value="24"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JLabel" name="lblCategoria">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="Categoría:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cmbCategoria">
+        </Component>
         <Component class="javax.swing.JLabel" name="lblEstado">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="4"/>

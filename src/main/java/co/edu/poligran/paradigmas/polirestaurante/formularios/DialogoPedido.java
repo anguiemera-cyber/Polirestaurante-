@@ -8,25 +8,18 @@ import co.edu.poligran.paradigmas.polirestaurante.modelo.EstadoPedido;
 import co.edu.poligran.paradigmas.polirestaurante.negocio.ErikManager;
 import co.edu.poligran.paradigmas.polirestaurante.vista.PedidoVista;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+import co.edu.poligran.paradigmas.polirestaurante.tablas.ModeloTablaPedido;
 
 public class DialogoPedido extends JFrame {
 
@@ -49,7 +42,7 @@ public class DialogoPedido extends JFrame {
     private JButton btnCambiarEstado;
 
     private JTable tablaPedidos;
-    private DefaultTableModel modeloTabla;
+    private ModeloTablaPedido modeloTabla;
 
     private JLabel lblEstadisticas;
 
@@ -61,7 +54,8 @@ public class DialogoPedido extends JFrame {
 
         vista = new PedidoVista(operaciones);
 
-        construirFormulario();
+        initComponents();
+        configurarApariencia();
         configurarEventos();
         cargarProductos();
         cargarPedidos();
@@ -72,107 +66,127 @@ public class DialogoPedido extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    // CONSTRUIR FORMULARIO
-    private void construirFormulario() {
+    // Los componentes de este bloque se editan desde NetBeans > Design.
+    // GEN-BEGIN:initComponents
+    private void initComponents() {
+        panelPrincipal = new javax.swing.JPanel();
+        lblTitulo = new javax.swing.JLabel();
+        panelCentro = new javax.swing.JPanel();
+        panelSuperior = new javax.swing.JPanel();
+        panelFormulario = new javax.swing.JPanel();
+        lblId = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        lblProducto = new javax.swing.JLabel();
+        cmbProducto = new javax.swing.JComboBox<>();
+        lblCantidad = new javax.swing.JLabel();
+        txtCantidad = new javax.swing.JTextField();
+        lblMesa = new javax.swing.JLabel();
+        txtMesa = new javax.swing.JTextField();
+        lblDetalles = new javax.swing.JLabel();
+        txtDetalles = new javax.swing.JTextField();
+        lblEstado = new javax.swing.JLabel();
+        cmbEstado = new javax.swing.JComboBox<>();
+        panelBotones = new javax.swing.JPanel();
+        btnAgregar = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnLimpiar = new javax.swing.JButton();
+        btnListar = new javax.swing.JButton();
+        btnCambiarEstado = new javax.swing.JButton();
+        scrollPedidos = new javax.swing.JScrollPane();
+        tablaPedidos = new javax.swing.JTable();
+        lblEstadisticas = new javax.swing.JLabel();
 
-        JPanel principal = new JPanel(new BorderLayout(10, 10));
-        principal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Gestión de pedidos");
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
-        JLabel titulo = new JLabel(
-                "GESTIÓN DE PEDIDOS",
-                SwingConstants.CENTER
-        );
+        panelPrincipal.setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 20, 16, 20));
+        panelPrincipal.setLayout(new java.awt.BorderLayout(0, 14));
 
-        titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+        lblTitulo.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 24));
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setText("GESTIÓN DE PEDIDOS");
+        panelPrincipal.add(lblTitulo, java.awt.BorderLayout.NORTH);
 
-        principal.add(titulo, BorderLayout.NORTH);
+        panelCentro.setLayout(new java.awt.BorderLayout(0, 14));
+        panelSuperior.setLayout(new java.awt.BorderLayout(0, 10));
+        panelFormulario.setLayout(new java.awt.GridLayout(3, 4, 12, 8));
 
-        JPanel formulario = new JPanel(new GridLayout(4, 4, 10, 10));
+        lblId.setText("ID del pedido:");
+        panelFormulario.add(lblId);
+        txtId.setEditable(false);
+        txtId.setText("Automático");
+        panelFormulario.add(txtId);
+        lblProducto.setText("Producto:");
+        panelFormulario.add(lblProducto);
+        panelFormulario.add(cmbProducto);
+        lblCantidad.setText("Cantidad:");
+        panelFormulario.add(lblCantidad);
+        panelFormulario.add(txtCantidad);
+        lblMesa.setText("Mesa / Modalidad:");
+        panelFormulario.add(lblMesa);
+        panelFormulario.add(txtMesa);
+        lblDetalles.setText("Detalles:");
+        panelFormulario.add(lblDetalles);
+        panelFormulario.add(txtDetalles);
+        lblEstado.setText("Estado:");
+        panelFormulario.add(lblEstado);
+        panelFormulario.add(cmbEstado);
+        panelSuperior.add(panelFormulario, java.awt.BorderLayout.CENTER);
 
-        txtId = new JTextField();
-        txtCantidad = new JTextField();
-        txtMesa = new JTextField();
-        txtDetalles = new JTextField();
+        panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 4));
+        btnAgregar.setText("Agregar");
+        panelBotones.add(btnAgregar);
+        btnBuscar.setText("Buscar");
+        panelBotones.add(btnBuscar);
+        btnActualizar.setText("Actualizar");
+        panelBotones.add(btnActualizar);
+        btnEliminar.setText("Eliminar");
+        panelBotones.add(btnEliminar);
+        btnLimpiar.setText("Limpiar");
+        panelBotones.add(btnLimpiar);
+        btnListar.setText("Listar");
+        panelBotones.add(btnListar);
+        btnCambiarEstado.setText("Cambiar estado");
+        panelBotones.add(btnCambiarEstado);
+        panelSuperior.add(panelBotones, java.awt.BorderLayout.SOUTH);
+        panelCentro.add(panelSuperior, java.awt.BorderLayout.NORTH);
 
-        cmbProducto = new JComboBox<>();
-        cmbEstado = new JComboBox<>(EstadoPedido.values());
+        scrollPedidos.setViewportView(tablaPedidos);
+        panelCentro.add(scrollPedidos, java.awt.BorderLayout.CENTER);
+        lblEstadisticas.setText("Pedidos: 0 | Pendientes: 0 | Entregados: 0");
+        panelCentro.add(lblEstadisticas, java.awt.BorderLayout.SOUTH);
+        panelPrincipal.add(panelCentro, java.awt.BorderLayout.CENTER);
+        getContentPane().add(panelPrincipal, java.awt.BorderLayout.CENTER);
+        pack();
+    }
+    // GEN-END:initComponents
 
-        formulario.add(new JLabel("ID del pedido:"));
-        formulario.add(txtId);
+    private javax.swing.JPanel panelPrincipal;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel panelCentro;
+    private javax.swing.JPanel panelSuperior;
+    private javax.swing.JPanel panelFormulario;
+    private javax.swing.JPanel panelBotones;
+    private javax.swing.JScrollPane scrollPedidos;
+    private javax.swing.JLabel lblId;
+    private javax.swing.JLabel lblProducto;
+    private javax.swing.JLabel lblCantidad;
+    private javax.swing.JLabel lblMesa;
+    private javax.swing.JLabel lblDetalles;
+    private javax.swing.JLabel lblEstado;
 
-        formulario.add(new JLabel("Producto:"));
-        formulario.add(cmbProducto);
-
-        formulario.add(new JLabel("Cantidad:"));
-        formulario.add(txtCantidad);
-
-        formulario.add(new JLabel("Mesa / Modalidad:"));
-        formulario.add(txtMesa);
-
-        formulario.add(new JLabel("Detalles:"));
-        formulario.add(txtDetalles);
-
-        formulario.add(new JLabel("Estado:"));
-        formulario.add(cmbEstado);
-
-        JPanel contenedorFormulario = new JPanel(new BorderLayout());
-        contenedorFormulario.add(formulario, BorderLayout.CENTER);
-
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 10));
-
-        btnAgregar = new JButton("Agregar");
-        btnBuscar = new JButton("Buscar");
-        btnActualizar = new JButton("Actualizar");
-        btnEliminar = new JButton("Eliminar");
-        btnLimpiar = new JButton("Limpiar");
-        btnListar = new JButton("Listar");
-        btnCambiarEstado = new JButton("Cambiar estado");
-
-        botones.add(btnAgregar);
-        botones.add(btnBuscar);
-        botones.add(btnActualizar);
-        botones.add(btnEliminar);
-        botones.add(btnLimpiar);
-        botones.add(btnListar);
-        botones.add(btnCambiarEstado);
-
-        contenedorFormulario.add(botones, BorderLayout.SOUTH);
-
-        // TABLA
-        modeloTabla = new DefaultTableModel(
-                new Object[]{
-                    "ID",
-                    "Producto",
-                    "Cantidad",
-                    "Costo",
-                    "Mesa",
-                    "Detalles",
-                    "Estado"
-                }, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
-
-        tablaPedidos = new JTable(modeloTabla);
-
-        JScrollPane scroll = new JScrollPane(tablaPedidos);
-
-        JPanel centro = new JPanel(new BorderLayout(10, 10));
-        centro.add(contenedorFormulario, BorderLayout.NORTH);
-        centro.add(scroll, BorderLayout.CENTER);
-
-        lblEstadisticas = new JLabel(
-                "Pedidos: 0 | Pendientes: 0 | Entregados: 0"
-        );
-
-        centro.add(lblEstadisticas, BorderLayout.SOUTH);
-
-        principal.add(centro, BorderLayout.CENTER);
-
-        add(principal);
+    private void configurarApariencia() {
+        cmbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(EstadoPedido.values()));
+        modeloTabla = new ModeloTablaPedido();
+        tablaPedidos.setModel(modeloTabla);
+        tablaPedidos.setRowHeight(26);
+        tablaPedidos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tablaPedidos.setAutoCreateRowSorter(true);
+        setMinimumSize(new java.awt.Dimension(920, 580));
+        setSize(1120, 700);
     }
 
     // CONFIGURAR EVENTOS
@@ -289,12 +303,30 @@ public class DialogoPedido extends JFrame {
         }
     }
 
+    private int obtenerIdPedido() {
+        String valor = txtId.getText().trim();
+        if (valor.isEmpty() || "Automático".equalsIgnoreCase(valor)) {
+            String respuesta = JOptionPane.showInputDialog(this, "Ingresa el ID del pedido:");
+            if (respuesta == null) {
+                throw new IllegalArgumentException("Operación cancelada.");
+            }
+            valor = respuesta.trim();
+        }
+        try {
+            int id = Integer.parseInt(valor);
+            if (id <= 0) throw new NumberFormatException();
+            return id;
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Ingresa un ID numérico mayor que cero.");
+        }
+    }
+
     // BUSCAR PEDIDO
     private void buscarPedido() {
 
         try {
 
-            int id = Integer.parseInt(txtId.getText().trim());
+            int id = obtenerIdPedido();
 
             Pedido pedido = vista.buscarPedidoPorId(id);
 
@@ -307,12 +339,8 @@ public class DialogoPedido extends JFrame {
                 );
             }
 
-        } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Ingresa un ID válido."
-            );
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
 
@@ -321,7 +349,7 @@ public class DialogoPedido extends JFrame {
 
         try {
 
-            int id = Integer.parseInt(txtId.getText().trim());
+            int id = obtenerIdPedido();
 
             Producto producto = (Producto) cmbProducto.getSelectedItem();
 
@@ -373,7 +401,7 @@ public class DialogoPedido extends JFrame {
 
         try {
 
-            int id = Integer.parseInt(txtId.getText().trim());
+            int id = obtenerIdPedido();
 
             int respuesta = JOptionPane.showConfirmDialog(
                     this,
@@ -404,12 +432,8 @@ public class DialogoPedido extends JFrame {
                 }
             }
 
-        } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Selecciona un pedido válido."
-            );
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
 
@@ -418,7 +442,7 @@ public class DialogoPedido extends JFrame {
 
         try {
 
-            int id = Integer.parseInt(txtId.getText().trim());
+            int id = obtenerIdPedido();
 
             EstadoPedido estado = (EstadoPedido) cmbEstado.getSelectedItem();
 
@@ -441,40 +465,15 @@ public class DialogoPedido extends JFrame {
                 );
             }
 
-        } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Selecciona un pedido válido."
-            );
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }
 
     // LISTAR PEDIDOS
     private void cargarPedidos() {
 
-        modeloTabla.setRowCount(0);
-
-        List<Pedido> pedidos = vista.listarPedidos();
-
-        for (Pedido pedido : pedidos) {
-
-            String nombreProducto = "Sin producto";
-
-            if (pedido.getProductoPedido() != null) {
-                nombreProducto = pedido.getProductoPedido().getNombre();
-            }
-
-            modeloTabla.addRow(new Object[]{
-                pedido.getId(),
-                nombreProducto,
-                pedido.getCantidad(),
-                pedido.getCosto(),
-                pedido.getMesa(),
-                pedido.getDetalles(),
-                pedido.getEstado()
-            });
-        }
+        modeloTabla.setDatos(vista.listarPedidos());
 
         actualizarEstadisticas();
     }
@@ -486,11 +485,8 @@ public class DialogoPedido extends JFrame {
 
         if (fila >= 0) {
 
-            int id = Integer.parseInt(
-                    modeloTabla.getValueAt(fila, 0).toString()
-            );
-
-            Pedido pedido = vista.buscarPedidoPorId(id);
+            int filaModelo = tablaPedidos.convertRowIndexToModel(fila);
+            Pedido pedido = modeloTabla.getFila(filaModelo);
 
             if (pedido != null) {
                 mostrarPedido(pedido);
@@ -525,6 +521,11 @@ public class DialogoPedido extends JFrame {
                 return;
             }
         }
+        Producto encontrado = vista.getOperaciones().buscarProductoPorId(idProducto);
+        if (encontrado != null) {
+            cmbProducto.addItem(encontrado);
+            cmbProducto.setSelectedItem(encontrado);
+        }
     }
 
     // ESTADÍSTICAS
@@ -550,7 +551,7 @@ public class DialogoPedido extends JFrame {
     // LIMPIAR CAMPOS
     private void limpiarCampos() {
 
-        txtId.setText("");
+        txtId.setText("Automático");
         txtCantidad.setText("");
         txtMesa.setText("");
         txtDetalles.setText("");
